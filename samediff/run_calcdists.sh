@@ -6,7 +6,7 @@
 set -e
 
 # General setup
-n_cpus=3
+n_cpus=29
 cmd="python run_local.py"
 # cmd="./local/run_sge.py --extraargs -P inf_hcrc_cstr_students"
 export PYTHONUNBUFFERED="YOUR_SET"  # flush after every Python print statement

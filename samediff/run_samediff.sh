@@ -4,7 +4,7 @@
 # Herman Kamper, h.kamper@sms.ed.ac.uk, 2014-2015, 2018.
 
 # General setup
-n_cpus=3
+n_cpus=29
 
 # Input features
 features_npz=$1  # features_npz=../data/mfcc_test.npz
