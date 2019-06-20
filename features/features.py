@@ -9,7 +9,6 @@ Date: 2019
 from os import path
 from tqdm import tqdm
 import glob
-import librosa
 import numpy as np
 import scipy.io.wavfile as wav
 
@@ -21,6 +20,7 @@ def extract_fbank_dir(dir):
     Each dictionary key will be the filename of the associated audio file
     without the extension. Mel-scale log filterbanks are extracted.
     """
+    import librosa
     feat_dict = {}
     for wav_fn in tqdm(sorted(glob.glob(path.join(dir, "*.wav")))):
         signal, sample_rate = librosa.core.load(wav_fn, sr=None)
@@ -49,6 +49,7 @@ def extract_mfcc_dir(dir):
     Each dictionary key will be the filename of the associated audio file
     without the extension. Deltas and double deltas are also extracted.
     """
+    import librosa
     feat_dict = {}
     for wav_fn in tqdm(sorted(glob.glob(path.join(dir, "*.wav")))):
         signal, sample_rate = librosa.core.load(wav_fn, sr=None)

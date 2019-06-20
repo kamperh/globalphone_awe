@@ -14,15 +14,17 @@ This needs to be run on a multi-core machine. Change the `n_cpus` variable in
 
 As an example, to evaluate the Spanish development MFCCs:
 
-    ./run_calcdists.sh ../features/mfcc/SP/sp.eval.gt_words.npz
-    ./run_samediff.sh ../features/mfcc/SP/sp.eval.gt_words.npz
+    ./run_calcdists.sh ../features/mfcc/SP/sp.dev.gt_words.npz
+    ./run_samediff.sh ../features/mfcc/SP/sp.dev.gt_words.npz
 
 
 Results
 -------
-Spanish dev MFFCs:
+Spanish eval MFFCs:
 
-    Average precision: ??
-    Precision-recall breakeven: ??
+    Average precision: 0.430521533704422
+    Precision-recall breakeven: 0.48065739075532504
+    SWDP average precision: 0.29650854702289764
+    SWDP precision-recall breakeven: 0.38123891442546787
 
 *To-do*
