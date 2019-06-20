@@ -105,3 +105,5 @@ def segments_from_npz(input_npz_fn, segments_fn, output_npz_fn):
         )
     print("Writing:", output_npz_fn)
     np.savez(output_npz_fn, **output_npz)
+
+

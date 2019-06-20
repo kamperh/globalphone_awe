@@ -158,7 +158,7 @@ def main():
     feat_dir = path.join(feat_type, args.language)
     if not path.isdir(feat_dir):
         os.makedirs(feat_dir)
-    for subset in ["train"]:  #, ["dev", "eval", "train"]:  # Temp
+    for subset in ["eval"]:  #, ["dev", "eval", "train"]:  # Temp
         raw_feat_fn = path.join(
             feat_dir, args.language.lower() + "." + subset + ".npz"
             )
@@ -173,14 +173,14 @@ def main():
 
     # GROUND TRUTH WORD SEGMENTS
 
-    for subset in ["train"]:  #, ["dev", "eval", "train"]:  # Temp
+    list_dir = path.join("lists", args.language)
+    if not path.isdir(list_dir):
+        os.makedirs(list_dir)
+    for subset in ["eval"]:  #, ["dev", "eval", "train"]:  # Temp
     
         # Create a ground truth word list of at least 50 frames and 5 characters
         fa_fn = path.join(gp_alignments_dir, args.language, subset + ".ctm")
-        list_dir = path.join("lists", args.language)
         list_fn = path.join(list_dir, subset + ".gt_words.list")
-        if not path.isdir(list_dir):
-            os.makedirs(list_dir)
         if not path.isfile(list_fn):
             utils.filter_words(fa_fn, list_fn)
         else:
@@ -198,6 +198,40 @@ def main():
             utils.segments_from_npz(input_npz_fn, list_fn, output_npz_fn)
         else:
             print("Using existing file:", output_npz_fn)
+
+
+    # UTD-DISCOVERED WORD SEGMENTS
+
+    # Create the UTD word list from Enno Hermann's file
+    enno_list_fn = path.join("..", "data", args.language, "utd_terms.list")
+    list_fn = path.join("lists", args.language, "train.utd_terms.list")
+    if not path.isfile(list_fn):
+        print("Reading:", enno_list_fn)
+        print("Writing:", list_fn)
+        with open(enno_list_fn) as f_enno, open(list_fn, "w") as f:
+            for line in f_enno:
+                cluster, utt_key, start, end = line.strip().split("-")
+                start = int(start)
+                end = int(end)
+                f.write(
+                    "{}_{}_{:06d}-{:06d}\n".format(cluster, utt_key, start,
+                    end)
+                    )
+    else:
+        print("Using existing file:", list_fn)
+
+    # Extract UTD segments
+    input_npz_fn = path.join(
+        feat_dir, args.language.lower() + ".train.npz"
+        )
+    output_npz_fn = path.join(
+        feat_dir, args.language.lower() + ".train.utd_terms.npz"
+        )
+    if not path.isfile(output_npz_fn):
+        print("Extracting MFCCs for UTD word tokens")
+        utils.segments_from_npz(input_npz_fn, list_fn, output_npz_fn)
+    else:
+        print("Using existing file:", output_npz_fn)
 
 
 if __name__ == "__main__":
