@@ -88,11 +88,11 @@ def segments_from_npz(input_npz_fn, segments_fn, output_npz_fn):
         utterance, target_start, target_end = target_segs[target_seg_key]
         for utterance_key in [
                 i for i in utterance_segs.keys() if i.startswith(utterance)]:
-            utterannce_start, utterance_end = utterance_segs[utterance_key]
-            if (target_start >= utterannce_start and target_start <
+            utterance_start, utterance_end = utterance_segs[utterance_key]
+            if (target_start >= utterance_start and target_start <
                     utterance_end):
-                start = target_start - utterannce_start
-                end = target_end - utterannce_start
+                start = target_start - utterance_start
+                end = target_end - utterance_start
                 output_npz[target_seg_key] = input_npz[
                     utterance_key
                     ][start:end]
@@ -107,3 +107,27 @@ def segments_from_npz(input_npz_fn, segments_fn, output_npz_fn):
     np.savez(output_npz_fn, **output_npz)
 
 
+def terms_from_pairs(pairs_fn, output_list_fn):
+
+    print("Reading:", pairs_fn)
+    terms = set()
+    with open(pairs_fn) as f:
+        for line in f:
+            line = line.replace("###", " ")
+            (cluster, utt1, start1, end1, cluster2, utt2, start2, end2) = (
+                line.strip().split(" ")
+                )
+            start1 = int(start1)
+            end1 = int(end1)
+            start2 = int(start2)
+            end2 = int(end2)
+            terms.add((cluster, utt1, start1, end1))
+            terms.add((cluster, utt2, start2, end2))
+
+    print("Writing:", output_list_fn)
+    with open(output_list_fn, "w") as f:
+        for cluster, utt, start, end in terms:
+            f.write(
+                cluster + "_" + utt + "_" + "%06d" % start + "-" + "%06d" % end
+                + "\n"
+                )
