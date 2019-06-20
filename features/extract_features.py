@@ -121,7 +121,7 @@ def extract_features_for_subset(language, subset, feat_type, output_fn):
     wav_dir = path.join("wav", language, subset)
     if not path.isdir(wav_dir):
         os.makedirs(wav_dir)
-    print("Converting .shn audio to .wav:")
+    print("Converting shn audio to wav:")
     shorten_to_wav(language, speakers, wav_dir)
 
     # Extract raw features
@@ -158,7 +158,7 @@ def main():
     feat_dir = path.join(feat_type, args.language)
     if not path.isdir(feat_dir):
         os.makedirs(feat_dir)
-    for subset in ["eval"]:  #, ["dev", "eval", "train"]:  # Temp
+    for subset in ["dev", "eval", "train"]:
         raw_feat_fn = path.join(
             feat_dir, args.language.lower() + "." + subset + ".npz"
             )
@@ -176,7 +176,7 @@ def main():
     list_dir = path.join("lists", args.language)
     if not path.isdir(list_dir):
         os.makedirs(list_dir)
-    for subset in ["eval"]:  #, ["dev", "eval", "train"]:  # Temp
+    for subset in ["dev", "eval", "train"]:
     
         # Create a ground truth word list of at least 50 frames and 5 characters
         fa_fn = path.join(gp_alignments_dir, args.language, subset + ".ctm")
