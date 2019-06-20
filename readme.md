@@ -54,7 +54,7 @@ MFCC features in the `features/` directory as follows:
     ./extract_features.py SP
 
 You need to run `extract_features.py` for all languages; run it without any
-parameters to see all 16 language codes.
+arguments to see all 16 language codes.
 
 
 Evaluate frame-level features using the same-different task
@@ -63,4 +63,24 @@ This is optional. To perform frame-level same-different evaluation based on
 dynamic time warping (DTW), follow [samediff/readme.md](samediff/readme.md).
 
 
+Obtain downsampled acoustic word embeddings
+-------------------------------------------
+Extract and evaluate downsampled acoustic word embeddings by running the steps
+in [downsample/readme.md](downsample/readme.md).
 
+
+Train neural acoustic word embeddings
+-------------------------------------
+Train and evaluate neural network acoustic word embedding models by running the
+steps in [embeddings/readme.md](embeddings/readme.md).
+
+
+Unit tests
+----------
+In the root project directory, run `make test` to run unit tests.
+
+
+License
+-------
+The code is distributed under the Creative Commons Attribution-ShareAlike
+license ([CC BY-SA 4.0](http://creativecommons.org/licenses/by-sa/4.0/)).

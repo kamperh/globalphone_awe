@@ -45,7 +45,7 @@ def check_argv():
     parser.add_argument(
         "language", type=str, help="GlobalPhone language",
         choices=["BG", "CH", "CR", "CZ", "FR", "GE", "HA", "KO", "PL", "PO",
-        "RU", "SP", "SW", "TH", "TU", "VN", ]
+        "RU", "SP", "SW", "TH", "TU", "VN"]
         )
     if len(sys.argv) == 1:
         parser.print_help()
