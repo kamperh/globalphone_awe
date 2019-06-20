@@ -1,0 +1,13 @@
+*
+!*/
+!.*
+!*.py
+!*.pyx
+!*.md
+!*.sh
+!*.ipynb
+!*.conf
+!Makefile
+!docker/Dockerfile*
+!data/*
+notebooks/.ipynb_checkpoints/*
