@@ -613,7 +613,7 @@ def main():
     # Do not output TensorFlow info and warning messages
     import warnings
     warnings.filterwarnings("ignore")
-    os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
+    # os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
     tf.logging.set_verbosity(tf.logging.ERROR)
     if type(tf.contrib) != type(tf):
         tf.contrib._warning = None
