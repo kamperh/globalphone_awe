@@ -10,4 +10,5 @@
 !Makefile
 !docker/Dockerfile*
 !data/*
+!data/*/*
 notebooks/.ipynb_checkpoints/*
