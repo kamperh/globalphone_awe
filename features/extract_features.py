@@ -11,6 +11,7 @@ Date: 2019
 from os import path
 from tqdm import tqdm
 import argparse
+import codecs
 import glob
 import numpy as np
 import os
@@ -202,23 +203,49 @@ def main():
 
     # UTD-DISCOVERED WORD SEGMENTS
 
-    # Create the UTD word list from Enno Hermann's file
-    enno_list_fn = path.join("..", "data", args.language, "utd_terms.list")
+    # Change Enno Hermann's pair file to the appropriate format
+    enno_pairs_fn = path.join(
+        "..", "data", args.language, "pairs_sw_utd.train"
+        # "pairs_sw_utd_plp_vtln.train"
+        )
+    pairs_fn = path.join("lists", args.language, "train.utd_pairs.list")
+    if not path.isfile(pairs_fn):
+        utils.format_enno_pairs(enno_pairs_fn, pairs_fn)
+    else:
+        print("Using existing file:", pairs_fn)
     list_fn = path.join("lists", args.language, "train.utd_terms.list")
     if not path.isfile(list_fn):
-        print("Reading:", enno_list_fn)
+        print("Reading:", pairs_fn)
+        terms = set()
+        with codecs.open(pairs_fn, "r", "utf-8") as pairs_f:
+            for line in pairs_f:
+                term1, term2 = line.strip().split(" ")
+                terms.add(term1)
+                terms.add(term2)
         print("Writing:", list_fn)
-        with open(enno_list_fn) as f_enno, open(list_fn, "w") as f:
-            for line in f_enno:
-                cluster, utt_key, start, end = line.strip().split("-")
-                start = int(start)
-                end = int(end)
-                f.write(
-                    "{}_{}_{:06d}-{:06d}\n".format(cluster, utt_key, start,
-                    end)
-                    )
+        with codecs.open(list_fn, "w", "utf-8") as list_f:
+            for term in sorted(terms):
+                list_f.write(term + "\n")
     else:
         print("Using existing file:", list_fn)
+
+    # # Create the UTD word list from Enno Hermann's file
+    # enno_list_fn = path.join("..", "data", args.language, "utd_terms.list")
+    # list_fn = path.join("lists", args.language, "train.utd_terms.list")
+    # if not path.isfile(list_fn):
+    #     print("Reading:", enno_list_fn)
+    #     print("Writing:", list_fn)
+    #     with open(enno_list_fn) as f_enno, open(list_fn, "w") as f:
+    #         for line in f_enno:
+    #             cluster, utt_key, start, end = line.strip().split("-")
+    #             start = int(start)
+    #             end = int(end)
+    #             f.write(
+    #                 "{}_{}_{:06d}-{:06d}\n".format(cluster, utt_key, start,
+    #                 end)
+    #                 )
+    # else:
+    #     print("Using existing file:", list_fn)
 
     # Extract UTD segments
     input_npz_fn = path.join(

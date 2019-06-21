@@ -131,3 +131,24 @@ def terms_from_pairs(pairs_fn, output_list_fn):
                 cluster + "_" + utt + "_" + "%06d" % start + "-" + "%06d" % end
                 + "\n"
                 )
+
+
+def format_enno_pairs(enno_pairs_fn, output_pairs_fn):
+    print("Reading:", enno_pairs_fn)
+    print("Writing:", output_pairs_fn)
+    with codecs.open(enno_pairs_fn, "r", "utf-8") as enno_f:
+        with codecs.open(output_pairs_fn, "w", "utf-8") as output_f:
+            for line in enno_f:
+                line = line.replace("###", " ")
+                (cluster1, utt1, start1, end1, cluster2, utt2, start2, end2) = (
+                    line.strip().split(" ")
+                    )
+                start1 = int(start1)
+                end1 = int(end1)
+                start2 = int(start2)
+                end2 = int(end2)
+                output_f.write(
+                    "{}_{}_{:06d}-{:06d} "
+                    "{}_{}_{:06d}-{:06d}\n".format(cluster1, utt1, start1,
+                    end1, cluster2, utt2, start2, end2)
+                    )
