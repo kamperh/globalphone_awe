@@ -112,15 +112,6 @@ def main():
     print("SWDP precision-recall breakeven:", swdp_prb)
     print("-"*79)
 
-    # print("Calculating average precision")
-    # matches = samediff.generate_matches_array(labels)
-
-    # ap, prb = samediff.average_precision(
-    #     distances[matches == True], distances[matches == False]
-    #     )
-    # print("Average precision: {:.4f}".format(ap))
-    # print("Precision-recall breakeven: {:.4f}".format(prb))
-
     print(datetime.now())
 
 

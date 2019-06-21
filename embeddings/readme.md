@@ -24,3 +24,5 @@ Evaluate the model:
         models/SP.utd/train_cae_rnn/17b498a959/cae.best_val.ckpt SP test
     ./eval_samediff.py --mvn \
         models/SP.utd/train_cae_rnn/17b498a959/cae.best_val.SP.test.npz
+
+All the models trained below can be evaluated using these scripts.

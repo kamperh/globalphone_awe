@@ -5,7 +5,7 @@ Perform same-different evaluation of fixed-dimensional representations.
 
 Author: Herman Kamper
 Contact: kamperh@gmail.com
-Date: 2015, 2018, 2019
+Date: 2015, 2016, 2018, 2019
 """
 
 from datetime import datetime
@@ -31,9 +31,8 @@ def check_argv():
         )
     parser.add_argument("npz_fn", type=str, help="NumPy archive")
     parser.add_argument(
-        "--metric", choices=["cosine", "euclidean", "hamming", "chebyshev"],
-        default="cosine",
-        help="distance metric (default: %(default)s)"
+        "--metric", choices=["cosine", "euclidean", "hamming", "chebyshev",
+        "kl"], default="cosine", help="distance metric (default: %(default)s)"
         )
     parser.add_argument(
         "--mean_ap", dest="mean_ap", action="store_true",
@@ -64,9 +63,6 @@ def main():
 
     print(datetime.now())
 
-    # if args.normalize:
-    #     print("Normalizing embeddings")
-    # else:
     print("Ordering embeddings")
     n_embeds = 0
     X = []
@@ -86,7 +82,11 @@ def main():
     print(datetime.now())
 
     print("Calculating distances")
-    distances = pdist(X, metric=args.metric)
+    metric = args.metric
+    if metric == "kl":
+        import scipy.stats
+        metric = scipy.stats.entropy
+    distances = pdist(X, metric=metric)
 
     print(datetime.now())
 
@@ -118,13 +118,6 @@ def main():
     print("No. same-word pairs:", sum(word_matches))
     print("No. same-speaker pairs:", sum(speaker_matches))
     
-    # # Temp
-    # ap, prb = samediff.average_precision(
-    #     distances[matches == True], distances[matches == False]
-    #     )
-    # print("Average precision:", ap)
-    # print("Precision-recall breakeven:", prb)
-
     sw_ap, sw_prb, swdp_ap, swdp_prb = samediff.average_precision_swdp(
         distances[np.logical_and(word_matches, speaker_matches)],
         distances[np.logical_and(word_matches, speaker_matches == False)],
