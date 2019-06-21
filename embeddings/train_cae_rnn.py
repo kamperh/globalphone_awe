@@ -69,6 +69,7 @@ default_options_dict = {
         "d_speaker_embedding": None,        # if None, no speaker information
                                             # is used, otherwise this is the
                                             # embedding dimensionality
+        "n_max_pairs": None,
         "rnd_seed": 1,
     }
 
@@ -221,7 +222,10 @@ def train_cae(options_dict):
         data_io.trunc_and_limit_dim(val_x, val_lengths, d_frame, max_length)
 
     # Get pairs
-    pair_list = batching.get_pair_list(train_labels)
+    pair_list = batching.get_pair_list(
+        train_labels, both_directions=True,
+        n_max_pairs=options_dict["n_max_pairs"]
+        )
     print("No. pairs:", int(len(pair_list)/2.0))  # pairs in both directions
 
     # DEFINE MODEL

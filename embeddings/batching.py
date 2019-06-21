@@ -8,6 +8,7 @@ Date: 2018, 2019
 
 from os import path
 import numpy as np
+import random
 import sys
 
 sys.path.append(path.join("..", "src"))
@@ -378,7 +379,7 @@ class LabelledIterator(object):
 #                              UTILITY FUNCTIONS                              #
 #-----------------------------------------------------------------------------#
 
-def get_pair_list(labels, both_directions=True):
+def get_pair_list(labels, both_directions=True, n_max_pairs=None):
     """Return a list of tuples giving indices of matching types."""
     N = len(labels)
     match_list = []
@@ -389,4 +390,7 @@ def get_pair_list(labels, both_directions=True):
             match_list.append((n, cur_match_i))
             if both_directions:
                 match_list.append((cur_match_i, n))
+    if n_max_pairs is not None:
+        random.shuffle(match_list)
+        match_list = match_list[:n_max_pairs]
     return match_list
