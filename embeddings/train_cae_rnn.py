@@ -491,6 +491,11 @@ def check_argv():
         choices=sixteen_languages, default=None
         )
     parser.add_argument(
+        "--n_max_pairs", type=int,
+        help="maximum number of same-word pairs to use (default: %(default)s)",
+        default=default_options_dict["n_max_pairs"]
+        )
+    parser.add_argument(
         "--ae_n_epochs", type=int,
         help="number of epochs of AE pre-training (default: %(default)s)",
         default=default_options_dict["ae_n_epochs"]
@@ -590,6 +595,7 @@ def main():
     options_dict = default_options_dict.copy()
     options_dict["script"] = "train_cae_rnn"
     options_dict["train_lang"] = args.train_lang
+    options_dict["n_max_pairs"] = args.n_max_pairs
     options_dict["val_lang"] = args.val_lang
     options_dict["ae_n_epochs"] = args.ae_n_epochs
     options_dict["cae_n_epochs"] = args.cae_n_epochs
