@@ -462,17 +462,22 @@ def train_cae(options_dict):
                 val_model_fn = intermediate_model_fn
             else:
                 val_model_fn = model_fn
-        prb, ap = samediff_val(normalise=False)
+        sw_prb, sw_ap, swdp_prb, swdp_ap = samediff_val(normalise=False)
+        sw_ap = -sw_ap
+        swdp_ap = -swdp_ap
+        prb, ap = 
         ap = -ap
-        prb_normalised, ap_normalised = samediff_val(normalise=True)
-        ap_normalised = -ap_normalised
-        print("Validation AP:", ap)
-        print("Validation AP with normalisation:", ap_normalised)
+        (sw_prb_normalised, sw_ap_normalised, swdp_prb_normalised,
+            swdp_ap_normalised) = samediff_val(normalise=True)
+        sw_ap_normalised = -sw_ap_normalised
+        swdp_ap_normalised = -swdp_ap_normalised
+        print("Validation SWDP AP:", swdp_ap)
+        print("Validation SWDP AP with normalisation:", swdp_ap_normalised)
         ap_fn = path.join(model_dir, "val_ap.txt")
         print("Writing:", ap_fn)
         with open(ap_fn, "w") as f:
-            f.write(str(ap) + "\n")
-            f.write(str(ap_normalised) + "\n")
+            f.write(str(swdp_ap) + "\n")
+            f.write(str(swdp_ap_normalised) + "\n")
         print("Validation model:", val_model_fn)
 
     print(datetime.now())
