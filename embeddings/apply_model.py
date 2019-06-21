@@ -168,6 +168,14 @@ def check_argv():
 def main():
     args = check_argv()
 
+    # Do not output TensorFlow info and warning messages
+    import warnings
+    warnings.filterwarnings("ignore")
+    os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
+    tf.logging.set_verbosity(tf.logging.ERROR)
+    if type(tf.contrib) != type(tf):
+        tf.contrib._warning = None
+
     # Embed data
     embed_dict = apply_model(args.model_fn, args.subset, args.language)
 
