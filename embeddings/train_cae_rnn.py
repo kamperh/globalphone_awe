@@ -16,6 +16,7 @@ import pickle
 import hashlib
 import numpy as np
 import os
+import random
 import sys
 import tensorflow as tf
 
@@ -152,6 +153,7 @@ def train_cae(options_dict):
     print("Options:", options_dict)
 
     # Random seeds
+    random.seed(options_dict["rnd_seed"])
     np.random.seed(options_dict["rnd_seed"])
     tf.set_random_seed(options_dict["rnd_seed"])
 
