@@ -22,3 +22,5 @@ Evaluate the model:
 
     ./apply_model \
         models/SP.utd/train_cae_rnn/17b498a959/cae.best_val.ckpt SP val
+    ./eval_samediff.py --mvn \
+        models/SP.utd/train_cae_rnn/17b498a959/cae.best_val.SP.val.npz
