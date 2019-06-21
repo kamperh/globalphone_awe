@@ -205,8 +205,8 @@ def main():
 
     # Change Enno Hermann's pair file to the appropriate format
     enno_pairs_fn = path.join(
-        "..", "data", args.language, "pairs_sw_utd.train"
-        # "pairs_sw_utd_plp_vtln.train"
+        "..", "data", args.language, # "pairs_sw_utd.train"
+        "pairs_sw_utd_plp_vtln.train"
         )
     pairs_fn = path.join("lists", args.language, "train.utd_pairs.list")
     if not path.isfile(pairs_fn):
