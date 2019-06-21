@@ -13,6 +13,7 @@ from os import path
 import argparse
 import pickle
 import numpy as np
+import os
 import sys
 import tensorflow as tf
 
