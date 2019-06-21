@@ -388,9 +388,12 @@ def get_pair_list(labels, both_directions=True, n_max_pairs=None):
         for cur_match_i in (n + 1 + np.where(np.asarray(labels[n + 1:]) ==
                 cur_label)[0]):
             match_list.append((n, cur_match_i))
-            if both_directions:
-                match_list.append((cur_match_i, n))
+            # if both_directions:
+            #     match_list.append((cur_match_i, n))
     if n_max_pairs is not None:
         random.shuffle(match_list)
         match_list = match_list[:n_max_pairs]
-    return match_list
+    if both_directions:
+        return match_list + [(i[1], i[0]) for i in match_list]
+    else:
+        return match_list
