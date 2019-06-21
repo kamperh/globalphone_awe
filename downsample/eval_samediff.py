@@ -130,10 +130,12 @@ def main():
         distances[np.logical_and(word_matches, speaker_matches == False)],
         distances[word_matches == False]
         )
+    print("-"*79)
     print("Average precision:", sw_ap)
     print("Precision-recall breakeven:", sw_prb)
     print("SWDP average precision:", swdp_ap)
     print("SWDP precision-recall breakeven:", swdp_prb)
+    print("-"*79)
 
     print(datetime.now())
 
