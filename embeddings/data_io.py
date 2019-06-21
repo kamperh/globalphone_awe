@@ -15,7 +15,6 @@ sys.path.append(path.join("..", "src"))
 from tflego import NP_DTYPE
 
 
-
 def load_data_from_npz(npz_fn, min_length=None):
     print("Reading:", npz_fn)
     npz = np.load(npz_fn)
@@ -30,8 +29,9 @@ def load_data_from_npz(npz_fn, min_length=None):
             continue
         keys.append(utt_key)
         x.append(npz[utt_key])
-        word = utt_key.split("_")[0]
-        speaker = utt_key.split("_")[1][:3]
+        utt_key_split = utt_key.split("_")
+        word = utt_key_split[0]
+        speaker = utt_key_split[1]
         labels.append(word)
         speakers.append(speaker)
         lengths.append(npz[utt_key].shape[0])
