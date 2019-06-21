@@ -83,20 +83,43 @@ def main():
         metric = scipy.stats.entropy
     distances = pdist(X, metric=metric)
 
-    print("Getting labels")
+    print("Getting labels and speakers")
     labels = []
+    speakers = []
     for utt_id in ids:
-        word = utt_id.split("_")[0]  # "_".join(utt_id.split("_")[:-2])
+        utt_id = utt_id.split("_")
+        word = utt_id[0]
+        speaker = utt_id[1]
         labels.append(word)
+        speakers.append(speaker)
 
     print("Calculating average precision")
-    matches = samediff.generate_matches_array(labels)
-
-    ap, prb = samediff.average_precision(
-        distances[matches == True], distances[matches == False]
+    # matches = samediff.generate_matches_array(labels)  # Temp
+    word_matches = samediff.generate_matches_array(labels)
+    speaker_matches = samediff.generate_matches_array(speakers)
+    print("No. same-word pairs:", sum(word_matches))
+    print("No. same-speaker pairs:", sum(speaker_matches))
+    
+    sw_ap, sw_prb, swdp_ap, swdp_prb = samediff.average_precision_swdp(
+        distances[np.logical_and(word_matches, speaker_matches)],
+        distances[np.logical_and(word_matches, speaker_matches == False)],
+        distances[word_matches == False]
         )
-    print("Average precision: {:.4f}".format(ap))
-    print("Precision-recall breakeven: {:.4f}".format(prb))
+    print("-"*79)
+    print("Average precision:", sw_ap)
+    print("Precision-recall breakeven:", sw_prb)
+    print("SWDP average precision:", swdp_ap)
+    print("SWDP precision-recall breakeven:", swdp_prb)
+    print("-"*79)
+
+    # print("Calculating average precision")
+    # matches = samediff.generate_matches_array(labels)
+
+    # ap, prb = samediff.average_precision(
+    #     distances[matches == True], distances[matches == False]
+    #     )
+    # print("Average precision: {:.4f}".format(ap))
+    # print("Precision-recall breakeven: {:.4f}".format(prb))
 
     print(datetime.now())
 
