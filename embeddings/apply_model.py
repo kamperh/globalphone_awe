@@ -31,8 +31,8 @@ import data_io
 def build_model(x, x_lengths, options_dict):
     model_dict = {}
     if options_dict["script"] == "train_cae_rnn":
-        import train_cae
-        cae = train_cae.build_cae_from_options_dict(
+        import train_cae_rnn
+        cae = train_cae_rnn.build_cae_from_options_dict(
             x, x_lengths, x_lengths, options_dict
             )
         model_dict["output"] = cae["y"]
