@@ -276,6 +276,7 @@ def train_cae(options_dict):
         np.random.seed(options_dict["rnd_seed"])
         val_batch_iterator = batching.SimpleIterator(val_x, len(val_x), False)
         labels = [val_labels[i] for i in val_batch_iterator.indices]
+        speakers = [val_speakers[i] for i in val_batch_iterator.indices]
         saver = tf.train.Saver()
         with tf.Session() as session:
             saver.restore(session, val_model_fn)
