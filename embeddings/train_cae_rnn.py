@@ -294,17 +294,20 @@ def train_cae(options_dict):
         if normalise:
             np_z_normalised = (np_z - np_z.mean(axis=0))/np_z.std(axis=0)
             distances = pdist(np_z_normalised, metric="cosine")
-            matches = samediff.generate_matches_array(labels)
-            ap, prb = samediff.average_precision(
-                distances[matches == True], distances[matches == False]
-                )
         else:
             distances = pdist(np_z, metric="cosine")
-            matches = samediff.generate_matches_array(labels)
-            ap, prb = samediff.average_precision(
-                distances[matches == True], distances[matches == False]
-                )    
-        return [prb, -ap]
+        # matches = samediff.generate_matches_array(labels)
+        # ap, prb = samediff.average_precision(
+        #     distances[matches == True], distances[matches == False]
+        #     )    
+        word_matches = samediff.generate_matches_array(labels)
+        speaker_matches = samediff.generate_matches_array(speakers)
+        sw_ap, sw_prb, swdp_ap, swdp_prb = samediff.average_precision_swdp(
+            distances[np.logical_and(word_matches, speaker_matches)],
+            distances[np.logical_and(word_matches, speaker_matches == False)],
+            distances[word_matches == False]
+            )
+        return [sw_prb, -sw_ap, swdp_prb, -swdp_ap]
 
     # Train AE
     val_model_fn = pretrain_intermediate_model_fn

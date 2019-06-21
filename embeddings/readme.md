@@ -26,3 +26,9 @@ Evaluate the model:
         models/SP.utd/train_cae_rnn/17b498a959/cae.best_val.SP.test.npz
 
 All the models trained below can be evaluated using these scripts.
+
+Analyse embeddings:
+
+    ../embeddings/analyse_embeds.py --normalize --word_type \
+        guatemala,presidente,autoridades,candidatos,asesinato,presupuesto,vicepresidente,negociaciones,netanyahu,social,explotaciones \
+        models/SP.utd/train_cae_rnn/17b498a959/cae.best_val.SP.val.npz
