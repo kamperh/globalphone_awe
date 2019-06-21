@@ -443,7 +443,7 @@ def train_cae(options_dict):
 
     # Save options_dict
     options_dict_fn = path.join(model_dir, "options_dict.pkl")
-    print("Writing:" + options_dict_fn)
+    print("Writing:", options_dict_fn)
     with open(options_dict_fn, "wb") as f:
         pickle.dump(options_dict, f, -1)
 
