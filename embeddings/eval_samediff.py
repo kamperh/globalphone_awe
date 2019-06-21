@@ -29,10 +29,15 @@ def check_argv():
     parser = argparse.ArgumentParser(
         description=__doc__.strip().split("\n")[0], add_help=False
         )
-    parser.add_argument("npz_fn", type=str, help="Numpy archive")
+    parser.add_argument("npz_fn", type=str, help="NumPy archive")
     parser.add_argument(
         "--metric", choices=["cosine", "euclidean", "hamming", "chebyshev",
         "kl"], default="cosine", help="distance metric (default: %(default)s)"
+        )
+    parser.add_argument(
+        "--mean_ap", dest="mean_ap", action="store_true",
+        help="also compute mean average precision (this is significantly "
+        "more resource intensive)"
         )
     parser.add_argument(
         "--mvn", action="store_true",
@@ -83,6 +88,8 @@ def main():
         metric = scipy.stats.entropy
     distances = pdist(X, metric=metric)
 
+    print(datetime.now())
+
     print("Getting labels and speakers")
     labels = []
     speakers = []
@@ -92,6 +99,17 @@ def main():
         speaker = utt_id[1]
         labels.append(word)
         speakers.append(speaker)
+
+    if args.mean_ap:
+        print(datetime.now())
+        print("Calculating mean average precision")
+        mean_ap, mean_prb, ap_dict = samediff.mean_average_precision(
+            distances, labels
+            )
+        print("Mean average precision:", mean_ap)
+        print("Mean precision-recall breakeven:", mean_prb)
+
+    print(datetime.now())
 
     print("Calculating average precision")
     # matches = samediff.generate_matches_array(labels)  # Temp

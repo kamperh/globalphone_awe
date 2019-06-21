@@ -107,21 +107,21 @@ def plot_embeds_2d(embeds_dict, types=None):
     X_pca = decomposition.TruncatedSVD(n_components=2).fit_transform(
         embeddings
         )
-    plot_data_labelled(X_pca, labels, "PCA")
+    plot_labelled_2d_data(X_pca, labels, "PCA")
 
     print("Computing t-SNE embedding")
     embeddings, labels = get_embeds_and_labels(embeds_dict, types)
     tsne = manifold.TSNE(
-       n_components=2, perplexity=10, init="pca", random_state=0
-       )
+        n_components=2, perplexity=20, init="random", random_state=1
+        )
     X_tsne = tsne.fit_transform(embeddings)
-    plot_data_labelled(X_tsne, labels, "t-SNE")
+    plot_labelled_2d_data(X_tsne, labels, "t-SNE")
 
     # print("Computing Spectral embedding")
     # embedder = manifold.SpectralEmbedding(n_components=2, random_state=0,
     #                                       eigen_solver="arpack")
     # X_se = embedder.fit_transform(embeddings)
-    # plot_data_labelled(X_se, labels)
+    # plot_labelled_2d_data(X_se, labels)
 
     # print("Computing Totally Random Trees embedding")
     # hasher = ensemble.RandomTreesEmbedding(n_estimators=200, random_state=0,
@@ -129,21 +129,32 @@ def plot_embeds_2d(embeds_dict, types=None):
     # X_transformed = hasher.fit_transform(embeddings)
     # pca = decomposition.TruncatedSVD(n_components=2)
     # X_reduced = pca.fit_transform(X_transformed)
-    # plot_data_labelled(X_reduced, labels)
+    # plot_labelled_2d_data(X_reduced, labels)
 
     # print("Computing MDS embedding")
     # clf = manifold.MDS(n_components=2, n_init=1, max_iter=100)
     # X_mds = clf.fit_transform(embeddings)
-    # plot_data_labelled(X_mds, labels)
+    # plot_labelled_2d_data(X_mds, labels)
 
     print("Computing Isomap embedding")
     n_neighbors = 10
-    X_iso = manifold.Isomap(n_neighbors, n_components=2).fit_transform(
-        embeddings
+    X_iso = manifold.Isomap(
+        n_neighbors, n_components=2).fit_transform(embeddings
         )
-    plot_data_labelled(
+    plot_labelled_2d_data(
         X_iso, labels, "Isomap (" + str(n_neighbors) + " neighbours)"
         )
+
+
+def plot_labelled_2d_data(X, labels, title=None):
+    plt.figure()
+    classes = set(labels)
+    for label in sorted(classes):
+        indices = np.where(np.array(labels) == label)[0]
+        plt.scatter(X[indices, 0], X[indices, 1], label=label)
+    if title is not None:
+        plt.title(title)
+    plt.legend(loc="best", ncol=2)
 
 
 def plot_data_labelled(X, labels, title=None):

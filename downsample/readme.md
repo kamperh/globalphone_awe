@@ -22,8 +22,9 @@ Evaluation
 ----------
 Evaluate and analyse downsampled MFCCs without deltas:
 
-    ./eval_samediff.py --mvn exp/SP/mfcc.dev.gt_words.downsample_10.npz
-    ./analyse_embeds.py --normalize --word_type \
+    ../embeddings/eval_samediff.py --mvn \
+        exp/SP/mfcc.dev.gt_words.downsample_10.npz
+    ../embeddings/analyse_embeds.py --normalize --word_type \
         guatemala,presidente,autoridades,candidatos,asesinato,presupuesto,vicepresidente,negociaciones,netanyahu,social,explotaciones \
         exp/SP/mfcc.dev.gt_words.downsample_10.npz
 
