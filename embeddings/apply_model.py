@@ -30,7 +30,7 @@ import data_io
 
 def build_model(x, x_lengths, options_dict):
     model_dict = {}
-    if options_dict["script"] == "train_cae":
+    if options_dict["script"] == "train_cae_rnn":
         import train_cae
         cae = train_cae.build_cae_from_options_dict(
             x, x_lengths, x_lengths, options_dict
@@ -56,6 +56,8 @@ def build_model(x, x_lengths, options_dict):
             x, options_dict
             )
         model_dict["encoding"] = siamese["output"]
+    else:
+        assert False
     return model_dict
 
 
