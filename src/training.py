@@ -134,13 +134,13 @@ def train_fixed_epochs(n_epochs, optimizer, train_loss_tensor,
             
             log = "{:.3f} sec".format(epoch_time)
             log += ", train loss: " + str(train_loss)
-            if validation_loss is not None:
+            if validation_loss_tensor is not None:
                 log += ", val loss: " + str(validation_loss)
-            if (save_best_val_model_fn is not None and cur_validation_loss <
-                    best_validation_loss):
-                saver.save(session, save_best_val_model_fn)
-                best_validation_loss = cur_validation_loss
-                log += " *"
+                if (save_best_val_model_fn is not None and cur_validation_loss <
+                        best_validation_loss):
+                    saver.save(session, save_best_val_model_fn)
+                    best_validation_loss = cur_validation_loss
+                    log += " *"
             print(log)
             sys.stdout.flush()
 
