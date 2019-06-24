@@ -371,7 +371,7 @@ def main():
         tf.contrib._warning = None
 
     # Train model
-    train_siamese(options_dict)    
+    train_rnn(options_dict)    
 
 
 if __name__ == "__main__":
