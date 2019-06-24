@@ -287,7 +287,8 @@ def train_siamese(options_dict):
             val_model_fn = intermediate_model_fn
         else:
             val_model_fn = model_fn
-        sw_prb, sw_ap, swdp_prb, swdp_ap = samediff_val(normalise=False)
+        # sw_prb, sw_ap, swdp_prb, swdp_ap = samediff_val(normalise=False)
+        swdp_prb, swdp_ap = samediff_val(normalise=False)
         sw_ap = -sw_ap
         swdp_ap = -swdp_ap
         (sw_prb_normalised, sw_ap_normalised, swdp_prb_normalised,
