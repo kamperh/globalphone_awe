@@ -289,8 +289,8 @@ def train_fixed_epochs_external_val(n_epochs, optimizer, train_loss_tensor,
                     log += ", val loss: {:.8f}".format(validation_loss)
                 else:
                     log += ", val loss: [" + ", ".join(
-                        ["{:.8f}".format(i) for i in validation_loss] + "]"
-                        )
+                        ["{:.8f}".format(i) for i in validation_loss]
+                        ) + "]"
                 if cur_validation_loss < best_validation_loss:
                     saver.save(session, save_best_val_model_fn)
                     best_validation_loss = cur_validation_loss
