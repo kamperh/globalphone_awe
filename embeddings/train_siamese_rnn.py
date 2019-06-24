@@ -291,9 +291,10 @@ def train_siamese(options_dict):
         swdp_prb, swdp_ap = samediff_val(normalise=False)
         # sw_ap = -sw_ap
         swdp_ap = -swdp_ap
-        (sw_prb_normalised, sw_ap_normalised, swdp_prb_normalised,
-            swdp_ap_normalised) = samediff_val(normalise=True)
-        sw_ap_normalised = -sw_ap_normalised
+        # (sw_prb_normalised, sw_ap_normalised, swdp_prb_normalised,
+        #     swdp_ap_normalised) = samediff_val(normalise=True)
+        swdp_prb_normalised, swdp_ap_normalised = samediff_val(normalise=True)
+        # sw_ap_normalised = -sw_ap_normalised
         swdp_ap_normalised = -swdp_ap_normalised
         print("Validation SWDP AP:", swdp_ap)
         print("Validation SWDP AP with normalisation:", swdp_ap_normalised)
