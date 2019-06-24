@@ -274,7 +274,7 @@ def train_siamese(options_dict):
 
     # Save options_dict
     options_dict_fn = path.join(model_dir, "options_dict.pkl")
-    print("Writing:" + options_dict_fn)
+    print("Writing:", options_dict_fn)
     with open(options_dict_fn, "wb") as f:
         pickle.dump(options_dict, f, -1)
 
@@ -289,7 +289,7 @@ def train_siamese(options_dict):
             val_model_fn = model_fn
         # sw_prb, sw_ap, swdp_prb, swdp_ap = samediff_val(normalise=False)
         swdp_prb, swdp_ap = samediff_val(normalise=False)
-        sw_ap = -sw_ap
+        # sw_ap = -sw_ap
         swdp_ap = -swdp_ap
         (sw_prb_normalised, sw_ap_normalised, swdp_prb_normalised,
             swdp_ap_normalised) = samediff_val(normalise=True)
