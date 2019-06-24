@@ -374,6 +374,14 @@ def main():
     options_dict["train_tag"] = args.train_tag
     options_dict["rnd_seed"] = args.rnd_seed
 
+    # Do not output TensorFlow info and warning messages
+    import warnings
+    warnings.filterwarnings("ignore")
+    os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
+    tf.logging.set_verbosity(tf.logging.ERROR)
+    if type(tf.contrib) != type(tf):
+        tf.contrib._warning = None
+
     # Train model
     train_siamese(options_dict)    
 

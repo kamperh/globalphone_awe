@@ -40,3 +40,9 @@ Train a Siamese RNN on ground truth segments:
 
     ./train_siamese_rnn.py --n_epochs 50 --train_tag gt --val_lang SP SP
 
+
+Siamese CNN
+-----------
+Train a Siamese CNN on ground truth segments:
+
+    ./train_siamese_cnn.py --n_epochs 150 --train_tag gt --n_val_interval 5
