@@ -230,6 +230,7 @@ def train_cae(options_dict):
         )
     print("No. pairs:", int(len(pair_list)/2.0))  # pairs in both directions
 
+
     # DEFINE MODEL
 
     print(datetime.now())

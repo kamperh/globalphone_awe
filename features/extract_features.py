@@ -75,6 +75,8 @@ def shorten_to_wav(language, speakers, output_dir):
                 glob.glob(path.join(shorten_dir, speaker, "*.shn"))
                 )
 
+    assert len(shorten_files) > 0, "no audio found; check paths.py"
+
     # Convert to wav
     for shorten_fn in tqdm(shorten_files):
         basename = path.split(shorten_fn)[-1].split(".")[0]
@@ -171,6 +173,8 @@ def main():
         else:
             print("Using existing file:", raw_feat_fn)
 
+    assert False
+
 
     # GROUND TRUTH WORD SEGMENTS
 
@@ -208,6 +212,9 @@ def main():
         "..", "data", args.language, # "pairs_sw_utd.train"
         "pairs_sw_utd_plp_vtln.train"
         )
+    if not path.isfile(enno_pairs_fn):
+        # This might not be an evaluation language
+        return
     pairs_fn = path.join("lists", args.language, "train.utd_pairs.list")
     if not path.isfile(pairs_fn):
         utils.format_enno_pairs(enno_pairs_fn, pairs_fn)
@@ -228,24 +235,6 @@ def main():
                 list_f.write(term + "\n")
     else:
         print("Using existing file:", list_fn)
-
-    # # Create the UTD word list from Enno Hermann's file
-    # enno_list_fn = path.join("..", "data", args.language, "utd_terms.list")
-    # list_fn = path.join("lists", args.language, "train.utd_terms.list")
-    # if not path.isfile(list_fn):
-    #     print("Reading:", enno_list_fn)
-    #     print("Writing:", list_fn)
-    #     with open(enno_list_fn) as f_enno, open(list_fn, "w") as f:
-    #         for line in f_enno:
-    #             cluster, utt_key, start, end = line.strip().split("-")
-    #             start = int(start)
-    #             end = int(end)
-    #             f.write(
-    #                 "{}_{}_{:06d}-{:06d}\n".format(cluster, utt_key, start,
-    #                 end)
-    #                 )
-    # else:
-    #     print("Using existing file:", list_fn)
 
     # Extract UTD segments
     input_npz_fn = path.join(
