@@ -12,8 +12,8 @@ to see all 16 language codes. Alternatively, links can be greated for all
 languages by giving the "all" argument.
 
 
-Correspondence autoencoder
---------------------------
+Correspondence autoencoder RNN
+------------------------------
 Train, validate and test a CAE-RNN on Spanish ground truth segments:
 
     ./train_cae_rnn.py --ae_n_epochs 10 --cae_n_epochs 3 --val_lang SP SP
@@ -33,4 +33,10 @@ Analyse embeddings:
         guatemala,presidente,autoridades,candidatos,asesinato,presupuesto,vicepresidente,negociaciones,netanyahu,social,explotaciones \
         models/SP.utd/train_cae_rnn/17b498a959/cae.best_val.SP.val.npz
 
-models/SP.gt/train_cae_rnn/0b89b0ce2e/
+
+Siamese RNN
+-----------
+Train a Siamese RNN on ground truth segments:
+
+    ./train_siamese_rnn.py --n_epochs 50 --train_tag gt --val_lang SP SP
+
