@@ -173,8 +173,6 @@ def main():
         else:
             print("Using existing file:", raw_feat_fn)
 
-    assert False
-
 
     # GROUND TRUTH WORD SEGMENTS
 
