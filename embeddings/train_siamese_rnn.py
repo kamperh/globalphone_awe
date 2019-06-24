@@ -254,7 +254,7 @@ def train_siamese(options_dict):
     if options_dict["val_lang"] is None:
         record_dict = training.train_fixed_epochs(
             options_dict["n_epochs"], optimizer, loss, train_batch_iterator,
-            [x, x_lengths, y], samediff_val,
+            [x, x_lengths, y],
             save_model_fn=intermediate_model_fn
             )
     else:

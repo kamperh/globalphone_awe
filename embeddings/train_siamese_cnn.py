@@ -256,7 +256,7 @@ def train_siamese_cnn(options_dict):
     if options_dict["val_lang"] is None:
         record_dict = training.train_fixed_epochs(
             options_dict["n_epochs"], optimizer, loss, train_batch_iterator,
-            [x, y], samediff_val, save_model_fn=intermediate_model_fn,
+            [x, y], save_model_fn=intermediate_model_fn,
             )
     else:
         record_dict = training.train_fixed_epochs_external_val(
