@@ -171,7 +171,7 @@ def train_rnn(options_dict):
     x = tf.placeholder(TF_DTYPE, [None, None, options_dict["n_input"]])
     x_lengths = tf.placeholder(TF_ITYPE, [None])
     y = tf.placeholder(TF_ITYPE, [None])
-    network_dict = build_siamese_from_options_dict(x, x_lengths, options_dict)
+    network_dict = build_rnn_from_options_dict(x, x_lengths, options_dict)
     output = network_dict["output"]
 
     # Cross entropy loss
