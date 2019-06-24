@@ -172,6 +172,7 @@ def train_rnn(options_dict):
     x_lengths = tf.placeholder(TF_ITYPE, [None])
     y = tf.placeholder(TF_ITYPE, [None])
     network_dict = build_rnn_from_options_dict(x, x_lengths, options_dict)
+    encoding = network_dict["encoding"]
     output = network_dict["output"]
 
     # Cross entropy loss
