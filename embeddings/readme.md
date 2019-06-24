@@ -30,7 +30,7 @@ All the models trained below can be evaluated using these scripts.
 Analyse embeddings:
 
     ../embeddings/analyse_embeds.py --normalize --word_type \
-        guatemala,presidente,autoridades,candidatos,asesinato,presupuesto,vicepresidente,negociaciones,netanyahu,social,explotaciones \
+        guatemala,presidente,autoridades,candidatos,vicepresidente,social \
         models/SP.utd/train_cae_rnn/17b498a959/cae.best_val.SP.val.npz
 
 
@@ -54,4 +54,18 @@ Train a word classifier CNN on ground truth segments:
 
     ./train_cnn.py --n_epochs 150 --train_tag gt --n_val_interval 5 SP
 
+
+Classifier RNN
+--------------
+Train a word classifier RNN on ground truth segmens:
+
+    ./train_rnn.py --n_epochs 25 --train_tag utd --val_lang SP SP
+
+
+Current hyperparameters
+-----------------------
+CAE-RNN:
+
+    ./train_cae_rnn.py --pretrain_usefinal --ae_n_epochs 5 --cae_n_epochs 25 \
+        --train_tag gt --val_lang SP RU
 

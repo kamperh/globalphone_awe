@@ -93,8 +93,10 @@ def main():
             relative_features_dir, "mfcc", language, language.lower() +
             ".train.utd_terms.npz"
             )
-        link_fn = path.join(link_dir, "train.utd.npz")
-        link_features(npz_fn, link_fn, link_dir)
+        if path.isfile(npz_fn):
+            # Not all languages have UTD output
+            link_fn = path.join(link_dir, "train.utd.npz")
+            link_features(npz_fn, link_fn, link_dir)
 
         # Validation: Ground truth words
         npz_fn = path.join(
