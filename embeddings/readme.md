@@ -53,3 +53,5 @@ Classifier CNN
 Train a word classifier CNN on ground truth segments:
 
     ./train_cnn.py --n_epochs 150 --train_tag gt --n_val_interval 5 SP
+
+

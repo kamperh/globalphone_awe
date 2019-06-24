@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 """
-Train a word classifier CNN.
+Train a word classifier RNN.
 
 Author: Herman Kamper
 Contact: kamperh@gmail.com
@@ -15,8 +15,8 @@ import argparse
 import pickle
 import hashlib
 import numpy as np
-import random
 import os
+import random
 import sys
 import tensorflow as tf
 
@@ -40,21 +40,17 @@ default_options_dict = {
         "train_lang": None,                 # language code
         "val_lang": None,
         "train_tag": "utd",                 # "gt", "utd", "rnd"
-        "max_length": 101,
-        "filter_shapes": [
-            [39, 8, 1, 64],
-            [1, 6, 64, 256],
-            [1, 5, 256, 1024]
-            ],
-        "pool_shapes": [
-            [1, 2],
-            [1, 2],
-            [1, 17]
-            ],
-        "ff_n_hiddens": [1024, 130],        # last (embedding) layer is linear
-        "n_epochs": 250,
+        "max_length": 100,
+        "bidirectional": False,
+        "rnn_type": "gru",                  # "lstm", "gru", "rnn"
+        "rnn_n_hiddens": [400, 400, 400],
+        "ff_n_hiddens": [130],              # embedding dimensionality
         "learning_rate": 0.001,
-        "batch_size": 600,
+        "rnn_keep_prob": 1.0,
+        "ff_keep_prob": 1.0,
+        "n_epochs": 10,
+        "batch_size": 300,
+        "n_buckets": 3,
         "extrinsic_usefinal": False,        # if True, during final extrinsic
                                             # evaluation, the final saved model
                                             # will be used (instead of the
@@ -68,25 +64,35 @@ default_options_dict = {
 #                              TRAINING FUNCTIONS                             #
 #-----------------------------------------------------------------------------#
 
-def build_cnn_from_options_dict(x, options_dict, ff_keep_prob=1.0):
+def build_rnn_from_options_dict(x, x_lengths, options_dict):
     network_dict = {}
-    cnn = tflego.build_cnn(
-        x, options_dict["input_shape"], options_dict["filter_shapes"],
-        options_dict["pool_shapes"], padding="VALID"
+    if options_dict["bidirectional"]:
+        rnn_outputs, rnn_states = tflego.build_bidirectional_multi_rnn(
+            x, x_lengths, options_dict["rnn_n_hiddens"],
+            rnn_type=options_dict["rnn_type"],
+            keep_prob=options_dict["rnn_keep_prob"]
+            )
+    else:
+        rnn_outputs, rnn_states = tflego.build_multi_rnn(
+            x, x_lengths, options_dict["rnn_n_hiddens"],
+            rnn_type=options_dict["rnn_type"],
+            keep_prob=options_dict["rnn_keep_prob"]
+            )
+    if options_dict["rnn_type"] == "lstm":
+        rnn_states = rnn_states.h
+    rnn = tflego.build_feedforward(
+        rnn_states, options_dict["ff_n_hiddens"],
+        keep_prob=options_dict["ff_keep_prob"]
         )
-    cnn = tf.contrib.layers.flatten(cnn)
-    cnn = tflego.build_feedforward(
-        cnn,  options_dict["ff_n_hiddens"], keep_prob=ff_keep_prob
-        )
-    network_dict["encoding"] = cnn
+    network_dict["encoding"] = rnn
     with tf.variable_scope("ff_layer_final"):
-        cnn = tflego.build_linear(cnn, options_dict["n_classes"])
-    network_dict["output"] = cnn
+        rnn = tflego.build_linear(rnn, options_dict["n_classes"])
+    network_dict["output"] = rnn
     return network_dict
 
 
-def train_cnn(options_dict):
-    """Train and save a classifier CNN."""
+def train_rnn(options_dict):
+    """Train and save a Siamese triplets model."""
 
     # PRELIMINARY
 
@@ -141,26 +147,15 @@ def train_cnn(options_dict):
             data_io.load_data_from_npz(npz_fn)
             )
 
-    # Zero-pad sequences
+    # Truncate and limit dimensionality
     max_length = options_dict["max_length"]
+    d_frame = 13  # None
+    options_dict["n_input"] = d_frame
+    print("Limiting dimensionality:", d_frame)
     print("Limiting length:", max_length)
-    train_x, _ = data_io.pad_sequences(train_x, max_length, True)
-    train_x = np.transpose(train_x, (0, 2, 1))
+    data_io.trunc_and_limit_dim(train_x, train_lengths, d_frame, max_length)
     if options_dict["val_lang"] is not None:
-        val_x, _ = data_io.pad_sequences(val_x, max_length, True)
-        val_x = np.transpose(val_x, (0, 2, 1))
-    
-    # Dimensionalities
-    d_in = train_x.shape[1]*train_x.shape[2]
-    input_shape = [-1, train_x.shape[1], train_x.shape[2], 1] 
-    # [n_data, height, width, channels]
-    options_dict["d_in"] = d_in
-    options_dict["input_shape"] = input_shape
-
-    # Flatten data
-    train_x = train_x.reshape((-1, d_in))
-    if options_dict["val_lang"] is not None:
-        val_x = val_x.reshape((-1, d_in))
+        data_io.trunc_and_limit_dim(val_x, val_lengths, d_frame, max_length)
 
 
     # DEFINE MODEL
@@ -169,14 +164,14 @@ def train_cnn(options_dict):
     print("Building model")
 
     # Model filenames
-    intermediate_model_fn = path.join(model_dir, "cnn.tmp.ckpt")
-    model_fn = path.join(model_dir, "cnn.best_val.ckpt")
+    intermediate_model_fn = path.join(model_dir, "rnn.tmp.ckpt")
+    model_fn = path.join(model_dir, "rnn.best_val.ckpt")
 
     # Model graph
-    x = tf.placeholder(TF_DTYPE, [None, d_in])
+    x = tf.placeholder(TF_DTYPE, [None, None, options_dict["n_input"]])
+    x_lengths = tf.placeholder(TF_ITYPE, [None])
     y = tf.placeholder(TF_ITYPE, [None])
-    network_dict = build_cnn_from_options_dict(x, options_dict)
-    encoding = network_dict["encoding"]
+    network_dict = build_siamese_from_options_dict(x, x_lengths, options_dict)
     output = network_dict["output"]
 
     # Cross entropy loss
@@ -194,20 +189,20 @@ def train_cnn(options_dict):
     print("Training model")
 
     # Validation function
-    def samediff_val(normalise=False):
+    def samediff_val(normalise=True):
         # Embed validation
         np.random.seed(options_dict["rnd_seed"])
-        val_batch_iterator = batching.LabelledIterator(
-            val_x, None, val_x.shape[0], False
-            )
+        val_batch_iterator = batching.SimpleIterator(val_x, len(val_x), False)
         labels = [val_labels[i] for i in val_batch_iterator.indices]
         speakers = [val_speakers[i] for i in val_batch_iterator.indices]
         saver = tf.train.Saver()
         with tf.Session() as session:
             saver.restore(session, val_model_fn)
-            for batch_x in val_batch_iterator:
+            for batch_x_padded, batch_x_lengths in val_batch_iterator:
+                np_x = batch_x_padded
+                np_x_lengths = batch_x_lengths
                 np_z = session.run(
-                    [encoding], feed_dict={x: batch_x}
+                    [encoding], feed_dict={x: np_x, x_lengths: np_x_lengths}
                     )[0]
                 break  # single batch
 
@@ -236,20 +231,23 @@ def train_cnn(options_dict):
         # return [sw_prb, -sw_ap, swdp_prb, -swdp_ap]
         return [swdp_prb, -swdp_ap]
 
-    # Train CNN
+    # Train RNN
     val_model_fn = intermediate_model_fn
-    train_batch_iterator = batching.LabelledIterator(
-        train_x, train_y, options_dict["batch_size"], shuffle_every_epoch=True
+    train_batch_iterator = batching.LabelledBucketIterator(
+        train_x, train_y, options_dict["batch_size"],
+        n_buckets=options_dict["n_buckets"], shuffle_every_epoch=True
         )
     if options_dict["val_lang"] is None:
         record_dict = training.train_fixed_epochs(
             options_dict["n_epochs"], optimizer, loss, train_batch_iterator,
-            [x, y], save_model_fn=intermediate_model_fn,
+            [x, x_lengths, y],
+            save_model_fn=intermediate_model_fn
             )
     else:
         record_dict = training.train_fixed_epochs_external_val(
             options_dict["n_epochs"], optimizer, loss, train_batch_iterator,
-            [x, y], samediff_val, save_model_fn=intermediate_model_fn,
+            [x, x_lengths, y], samediff_val,
+            save_model_fn=intermediate_model_fn,
             save_best_val_model_fn=model_fn,
             n_val_interval=options_dict["n_val_interval"]
             )
@@ -279,6 +277,8 @@ def train_cnn(options_dict):
         swdp_prb, swdp_ap = samediff_val(normalise=False)
         # sw_ap = -sw_ap
         swdp_ap = -swdp_ap
+        # (sw_prb_normalised, sw_ap_normalised, swdp_prb_normalised,
+        #     swdp_ap_normalised) = samediff_val(normalise=True)
         swdp_prb_normalised, swdp_ap_normalised = samediff_val(normalise=True)
         # sw_ap_normalised = -sw_ap_normalised
         swdp_ap_normalised = -swdp_ap_normalised
@@ -323,13 +323,7 @@ def check_argv():
         default=default_options_dict["batch_size"]
         )
     parser.add_argument(
-        "--n_val_interval", type=int,
-        help="number of epochs in between external validation "
-        "(default: %(default)s)",
-        default=default_options_dict["n_val_interval"]
-        )
-    parser.add_argument(
-        "--train_tag", type=str, choices=["gt", "gt2", "utd", "rnd"],
+        "--train_tag", type=str, choices=["gt", "utd"],
         help="training set tag (default: %(default)s)",
         default=default_options_dict["train_tag"]
         )
@@ -344,6 +338,9 @@ def check_argv():
         "--rnd_seed", type=int, help="random seed (default: %(default)s)",
         default=default_options_dict["rnd_seed"]
         )
+    if len(sys.argv) == 1:
+        parser.print_help()
+        sys.exit(1)
     return parser.parse_args()
 
 
@@ -356,12 +353,11 @@ def main():
 
     # Set options
     options_dict = default_options_dict.copy()
-    options_dict["script"] = "train_cnn"
+    options_dict["script"] = "train_rnn"
     options_dict["train_lang"] = args.train_lang
     options_dict["val_lang"] = args.val_lang
     options_dict["n_epochs"] = args.n_epochs
     options_dict["batch_size"] = args.batch_size
-    options_dict["n_val_interval"] = args.n_val_interval
     options_dict["train_tag"] = args.train_tag
     options_dict["extrinsic_usefinal"] = args.extrinsic_usefinal
     options_dict["rnd_seed"] = args.rnd_seed
@@ -375,7 +371,7 @@ def main():
         tf.contrib._warning = None
 
     # Train model
-    train_cnn(options_dict)    
+    train_siamese(options_dict)    
 
 
 if __name__ == "__main__":
