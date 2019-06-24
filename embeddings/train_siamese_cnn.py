@@ -60,7 +60,6 @@ default_options_dict = {
                                             # evaluation, the final saved model
                                             # will be used (instead of the
                                             # validation best)
-        "use_test_for_val": False,
         "n_val_interval": 1,
         "rnd_seed": 1,
     }
@@ -375,7 +374,6 @@ def main():
     options_dict["n_epochs"] = args.n_epochs
     options_dict["batch_size"] = args.batch_size
     options_dict["n_val_interval"] = args.n_val_interval
-    options_dict["use_test_for_val"] = args.use_test_for_val
     options_dict["train_tag"] = args.train_tag
     options_dict["rnd_seed"] = args.rnd_seed
 
