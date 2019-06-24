@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 """
-Train a Siamese CNN triplets network.
+Train a word classifier CNN.
 
 Author: Herman Kamper
 Contact: kamperh@gmail.com
@@ -51,8 +51,7 @@ default_options_dict = {
             [1, 2],
             [1, 17]
             ],
-        "ff_n_hiddens": [1024, 130],       # last (embedding) layer is linear
-        "margin": 0.25,
+        "ff_n_hiddens": [1024, 130],        # last (embedding) layer is linear
         "n_epochs": 250,
         "learning_rate": 0.001,
         "batch_size": 600,
@@ -69,39 +68,25 @@ default_options_dict = {
 #                              TRAINING FUNCTIONS                             #
 #-----------------------------------------------------------------------------#
 
-def build_siamese_cnn_side(x, input_shape, filter_shapes, pool_shapes,
-        ff_n_hiddens, ff_keep_prob=1.0):
-    """
-    CNN serving as one side of a Siamese model.
-    
-    See `tflego.build_cnn` for more details on the parameters.
-
-    Parameters
-    ----------
-    x : Tensor [n_data, n_input]
-        Input to the CNN, which is reshaped to match `input_shape`.
-    input_shape : list
-        The shape of the input to the CNN as [n_data, height, width, d_in].
-    """
-    cnn = tflego.build_cnn(x, input_shape, filter_shapes, pool_shapes, padding="VALID")
-    cnn = tf.contrib.layers.flatten(cnn)
-    cnn = tflego.build_feedforward(cnn, ff_n_hiddens, keep_prob=ff_keep_prob)
-    return cnn
-
-
-def build_siamese_cnn_from_options_dict(x, options_dict):
+def build_cnn_from_options_dict(x, options_dict, ff_keep_prob=1.0):
     network_dict = {}
-    cnn = build_siamese_cnn_side(
+    cnn = tflego.build_cnn(
         x, options_dict["input_shape"], options_dict["filter_shapes"],
-        options_dict["pool_shapes"], options_dict["ff_n_hiddens"]
+        options_dict["pool_shapes"], padding="VALID"
         )
-    cnn = tf.nn.l2_normalize(cnn, axis=1)
+    cnn = tf.contrib.layers.flatten(cnn)
+    cnn = tflego.build_feedforward(
+        cnn,  options_dict["ff_n_hiddens"], keep_prob=ff_keep_prob
+        )
+    network_dict["encoding"] = cnn
+    with tf.variable_scope("ff_layer_final"):
+        cnn = tflego.build_linear(cnn, options_dict["n_classes"])
     network_dict["output"] = cnn
     return network_dict
 
 
-def train_siamese_cnn(options_dict):
-    """Train and save a Siamese CNN triplets network."""
+def train_cnn(options_dict):
+    """Train and save a classifier CNN."""
 
     # PRELIMINARY
 
@@ -182,18 +167,19 @@ def train_siamese_cnn(options_dict):
     print("Building model")
 
     # Model filenames
-    intermediate_model_fn = path.join(model_dir, "siamese_cnn.tmp.ckpt")
-    model_fn = path.join(model_dir, "siamese_cnn.best_val.ckpt")
+    intermediate_model_fn = path.join(model_dir, "cnn.tmp.ckpt")
+    model_fn = path.join(model_dir, "cnn.best_val.ckpt")
 
     # Model graph
     x = tf.placeholder(TF_DTYPE, [None, d_in])
     y = tf.placeholder(TF_ITYPE, [None])
-    network_dict = build_siamese_cnn_from_options_dict(x, options_dict)
+    network_dict = build_cnn_from_options_dict(x, options_dict)
+    encoding = network_dict["encoding"]
     output = network_dict["output"]
 
-    # Semi-hard triplets loss
-    loss = tf.contrib.losses.metric_learning.triplet_semihard_loss(
-        labels=y, embeddings=output, margin=options_dict["margin"]
+    # Cross entropy loss
+    loss = tf.reduce_mean(
+        tf.nn.sparse_softmax_cross_entropy_with_logits(labels=y, logits=output)
         )
     optimizer = tf.train.AdamOptimizer(
         learning_rate=options_dict["learning_rate"]
@@ -219,7 +205,7 @@ def train_siamese_cnn(options_dict):
             saver.restore(session, val_model_fn)
             for batch_x in val_batch_iterator:
                 np_z = session.run(
-                    [output], feed_dict={x: batch_x}
+                    [encoding], feed_dict={x: batch_x}
                     )[0]
                 break  # single batch
 
@@ -368,7 +354,7 @@ def main():
 
     # Set options
     options_dict = default_options_dict.copy()
-    options_dict["script"] = "train_siamese_cnn"
+    options_dict["script"] = "train_cnn"
     options_dict["train_lang"] = args.train_lang
     options_dict["val_lang"] = args.val_lang
     options_dict["n_epochs"] = args.n_epochs
@@ -387,7 +373,7 @@ def main():
         tf.contrib._warning = None
 
     # Train model
-    train_siamese_cnn(options_dict)    
+    train_cnn(options_dict)    
 
 
 if __name__ == "__main__":

@@ -14,8 +14,7 @@ Perform downsampling on MFCCs without deltas:
     mkdir -p exp/SP
     ./downsample.py --technique resample --frame_dims 13 \
         ../features/mfcc/SP/sp.dev.gt_words.npz \
-        exp/SP/mfcc.dev.gt_words.downsample_10.npz \
-        10
+        exp/SP/mfcc.dev.gt_words.downsample_10.npz 10
 
 
 Evaluation
@@ -34,3 +33,4 @@ Results
 SWDP average precision:
 
 - Spanish dev: 0.1230192657391301
+- Chinese dev: 0.11420457391777498
