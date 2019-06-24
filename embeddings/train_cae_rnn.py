@@ -166,12 +166,33 @@ def train_cae(options_dict):
     if options_dict["train_tag"] == "rnd":
         min_length = options_dict["min_length"]
         train_tag = "all"
-    npz_fn = path.join(
-        "data", options_dict["train_lang"], "train." + train_tag + ".npz"
-        )
-    train_x, train_labels, train_lengths, train_keys, train_speakers = (
-        data_io.load_data_from_npz(npz_fn, min_length)
-        )
+    if "+" in options_dict["train_lang"]:
+        train_languages = options_dict["train_lang"].split("+")
+        train_x = []
+        train_labels = []
+        train_lengths = []
+        train_keys = []
+        train_speakers = []
+        for cur_lang in train_languages:
+            cur_npz_fn = path.join(
+            "data", cur_lang, "train." + train_tag + ".npz"
+            )
+            (cur_train_x, cur_train_labels, cur_train_lengths, cur_train_keys,
+                cur_train_speakers) = data_io.load_data_from_npz(cur_npz_fn,
+                min_length)
+            train_x.extend(cur_train_x)
+            train_labels.extend(cur_train_labels)
+            train_lengths.extend(cur_train_lengths)
+            train_keys.extend(cur_train_keys)
+            train_speakers.extend(cur_train_speakers)
+        print("Total no. items:", len(train_labels))
+    else:
+        npz_fn = path.join(
+            "data", options_dict["train_lang"], "train." + train_tag + ".npz"
+            )
+        train_x, train_labels, train_lengths, train_keys, train_speakers = (
+            data_io.load_data_from_npz(npz_fn, min_length)
+            )
 
     # Pretraining data (if specified)
     pretrain_tag = options_dict["pretrain_tag"]
