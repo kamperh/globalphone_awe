@@ -310,7 +310,8 @@ def train_cae(options_dict):
             distances[np.logical_and(word_matches, speaker_matches == False)],
             distances[word_matches == False]
             )
-        return [sw_prb, -sw_ap, swdp_prb, -swdp_ap]
+        # return [sw_prb, -sw_ap, swdp_prb, -swdp_ap]
+        return [swdp_prb, -swdp_ap]
 
     # Train AE
     val_model_fn = pretrain_intermediate_model_fn

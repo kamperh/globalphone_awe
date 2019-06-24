@@ -282,10 +282,15 @@ def train_fixed_epochs_external_val(n_epochs, optimizer, train_loss_tensor,
             record_dict["epoch_time"].append((i_epoch, epoch_time))
             
             log = "{:.3f} sec".format(epoch_time)
-            log += ", train loss: " + str(train_loss)
-            # log += ", val loss: " + str(validation_loss)
+            log += ", train loss: {:.8f}".format(train_loss)
+            # log += ", train loss: " + str(train_loss)
             if (i_epoch % n_val_interval) == 0:
-                log += ", val loss: " + str(validation_loss)
+                if not isinstance(validation_loss_tensor, (list, tuple)):
+                    log += ", val loss: {:.8f}".format(val_loss)
+                else:
+                    log += ", val loss: " + ", ".join(
+                        ["{:.8f}".format(i) for i in val_loss]
+                        )
                 if cur_validation_loss < best_validation_loss:
                     saver.save(session, save_best_val_model_fn)
                     best_validation_loss = cur_validation_loss
