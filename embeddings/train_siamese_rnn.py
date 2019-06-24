@@ -342,6 +342,11 @@ def check_argv():
         default=default_options_dict["train_tag"]
         )
     parser.add_argument(
+        "--margin", type=float,
+        help="margin for contrastive loss (default: %(default)s)",
+        default=default_options_dict["margin"]
+        )
+    parser.add_argument(
         "--extrinsic_usefinal", action="store_true",
         help="if set, during final extrinsic evaluation, the final saved "
         "model will be used instead of the validation best (default: "
@@ -372,8 +377,9 @@ def main():
     options_dict["val_lang"] = args.val_lang
     options_dict["n_epochs"] = args.n_epochs
     options_dict["batch_size"] = args.batch_size
-    options_dict["extrinsic_usefinal"] = args.extrinsic_usefinal
     options_dict["train_tag"] = args.train_tag
+    options_dict["margin"] = args.margin
+    options_dict["extrinsic_usefinal"] = args.extrinsic_usefinal
     options_dict["rnd_seed"] = args.rnd_seed
 
     # Do not output TensorFlow info and warning messages
