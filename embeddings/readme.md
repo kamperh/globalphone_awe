@@ -14,9 +14,9 @@ languages by giving the "all" argument.
 
 Correspondence autoencoder RNN
 ------------------------------
-Train, validate and test a CAE-RNN on Spanish ground truth segments:
+Train a CAE-RNN on Spanish ground truth segments:
 
-    ./train_cae_rnn.py --ae_n_epochs 10 --cae_n_epochs 3 --val_lang SP SP
+    ./train_cae_rnn.py --ae_n_epochs 5 --cae_n_epochs 25 --val_lang SP SP
 
 Evaluate the model:
 
@@ -32,6 +32,10 @@ Analyse embeddings:
     ../embeddings/analyse_embeds.py --normalize --word_type \
         guatemala,presidente,autoridades,candidatos,vicepresidente,social \
         models/SP.utd/train_cae_rnn/17b498a959/cae.best_val.SP.val.npz
+
+Train a CAE-RNN jointly on multiple languages:
+
+    ./train_cae_rnn.py --n_max_pairs 100000 --ae_n_epochs 10 --cae_n_epochs 25 --train_tag gt --val_lang SP RU+CZ
 
 
 Siamese RNN
@@ -52,7 +56,7 @@ Classifier CNN
 --------------
 Train a word classifier CNN on ground truth segments:
 
-    ./train_cnn.py --n_epochs 150 --train_tag gt --n_val_interval 5 SP
+    ./train_cnn.py --n_epochs 100 --train_tag gt --n_val_interval 5 SP
 
 
 Classifier RNN
@@ -64,8 +68,13 @@ Train a word classifier RNN on ground truth segmens:
 
 Current hyperparameters
 -----------------------
-CAE-RNN:
+CAE-RNN trained on UTD:
 
     ./train_cae_rnn.py --pretrain_usefinal --ae_n_epochs 5 --cae_n_epochs 25 \
-        --train_tag gt --val_lang SP RU
+        --train_tag utd --val_lang SP SP
+
+CAE-RNN trained on GT:
+
+    ./train_cae_rnn.py --pretrain_usefinal --ae_n_epochs 5 --cae_n_epochs 25 \
+        --n_max_pairs 100000 --train_tag gt --val_lang SP RU
 

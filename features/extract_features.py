@@ -88,7 +88,12 @@ def shorten_to_wav(language, speakers, output_dir):
                 shutil.copyfile(shorten_fn, raw_fn)
             else:
                 utils.shell(shorten_bin + " -x " + shorten_fn + " " + raw_fn)
-            assert path.isfile(raw_fn)
+            if not path.isfile(raw_fn):
+                print(
+                    "Warning: file not converted:", path.split(shorten_fn)[-1]
+                    )
+                continue
+            # assert path.isfile(raw_fn)
         if not path.isfile(wav_fn):
             utils.shell(
                 "sox -t raw -r 16000 -e signed-integer -b 16 " + raw_fn +
@@ -172,6 +177,8 @@ def main():
                 )
         else:
             print("Using existing file:", raw_feat_fn)
+
+    # assert False
 
 
     # GROUND TRUTH WORD SEGMENTS
