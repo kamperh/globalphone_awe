@@ -67,7 +67,7 @@ def extract_mfcc_dir(dir):
         #     n_fft=int(np.floor(0.025*sample_rate)),
         #     hop_length=int(np.floor(0.01*sample_rate))
         #     )
-        if mfcc.shape[1] <= 4:  # need at least 4 frames for deltas
+        if mfcc.shape[1] < 9:  # need at least 9 frames for deltas
             continue
         mfcc_delta = librosa.feature.delta(mfcc)
         mfcc_delta_delta = librosa.feature.delta(mfcc, order=2)

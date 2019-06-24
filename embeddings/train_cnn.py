@@ -131,6 +131,7 @@ def train_cnn(options_dict):
     for label in train_labels:
         train_y.append(label_to_id[label])
     train_y = np.array(train_y, dtype=NP_ITYPE)
+    options_dict["n_classes"] = len(label_to_id)
 
     # Validation data
     if options_dict["val_lang"] is not None:
