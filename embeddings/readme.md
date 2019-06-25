@@ -63,7 +63,7 @@ Classifier RNN
 --------------
 Train a word classifier RNN on ground truth segmens:
 
-    ./train_rnn.py --n_epochs 25 --train_tag utd --val_lang SP SP
+    ./train_rnn.py --n_epochs 25 --train_tag gt --val_lang SP SP
 
 
 Current hyperparameters
@@ -77,4 +77,3 @@ CAE-RNN trained on GT:
 
     ./train_cae_rnn.py --pretrain_usefinal --ae_n_epochs 5 --cae_n_epochs 25 \
         --n_max_pairs 100000 --train_tag gt --val_lang SP RU
-
