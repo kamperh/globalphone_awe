@@ -188,11 +188,22 @@ def main():
         os.makedirs(list_dir)
     for subset in ["dev", "eval", "train"]:
     
-        # Create a ground truth word list of at least 50 frames and 5 characters
+        # Create a ground truth word list (at least 50 frames and 5 characters)
         fa_fn = path.join(gp_alignments_dir, args.language, subset + ".ctm")
         list_fn = path.join(list_dir, subset + ".gt_words.list")
         if not path.isfile(list_fn):
-            utils.filter_words(fa_fn, list_fn)
+            if args.language == "KO":
+                min_frames = 26
+                min_chars = 3
+            elif args.language == "TH":
+                min_frames = 38
+                min_chars = 2
+            else:
+                min_frames = 50
+                min_chars = 5
+            utils.filter_words(
+                fa_fn, list_fn, min_frames=min_frames, min_chars=min_chars
+                )
         else:
             print("Using existing file:", list_fn)
 
