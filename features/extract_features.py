@@ -110,7 +110,7 @@ def read_speakers(speakers_fn, language):
             line = line.strip().split()
             if line[0] == language:
                 return line[1:]
-    assert False
+    assert False, "invalid language"
 
 
 def extract_features_for_subset(language, subset, feat_type, output_fn):
@@ -198,6 +198,9 @@ def main():
             elif args.language == "TH":
                 min_frames = 38
                 min_chars = 2
+            elif args.language == "VN":
+                min_frames = 30
+                min_chars = 4
             else:
                 min_frames = 50
                 min_chars = 5
