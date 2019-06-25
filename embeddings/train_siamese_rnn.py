@@ -136,13 +136,34 @@ def train_siamese(options_dict):
     # LOAD AND FORMAT DATA
 
     # Training data
-    train_tag = options_dict["train_tag"]
-    npz_fn = path.join(
-        "data", options_dict["train_lang"], "train." + train_tag + ".npz"
-        )
-    train_x, train_labels, train_lengths, train_keys, train_speakers = (
-        data_io.load_data_from_npz(npz_fn, None)
-        )
+    if "+" in options_dict["train_lang"]:
+        train_languages = options_dict["train_lang"].split("+")
+        train_x = []
+        train_labels = []
+        train_lengths = []
+        train_keys = []
+        train_speakers = []
+        for cur_lang in train_languages:
+            cur_npz_fn = path.join(
+                "data", cur_lang, "train." + options_dict["train_tag"] + ".npz"
+                )
+            (cur_train_x, cur_train_labels, cur_train_lengths, cur_train_keys,
+                cur_train_speakers) = data_io.load_data_from_npz(cur_npz_fn,
+                None)
+            train_x.extend(cur_train_x)
+            train_labels.extend(cur_train_labels)
+            train_lengths.extend(cur_train_lengths)
+            train_keys.extend(cur_train_keys)
+            train_speakers.extend(cur_train_speakers)
+        print("Total no. items:", len(train_labels))
+    else:
+        npz_fn = path.join(
+            "data", options_dict["train_lang"], "train." +
+            options_dict["train_tag"] + ".npz"
+            )
+        train_x, train_labels, train_lengths, train_keys, train_speakers = (
+            data_io.load_data_from_npz(npz_fn, None)
+            )
 
     # Convert training labels to integers
     train_label_set = list(set(train_labels))

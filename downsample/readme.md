@@ -39,4 +39,4 @@ SWDP average precision:
 - SW dev: 0.06808896675713268
 - TU dev: 0.1391460087700688
 
-- 
+- GE dev: 0.08031011359933939
