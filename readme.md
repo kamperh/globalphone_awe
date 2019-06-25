@@ -80,6 +80,11 @@ Unit tests
 In the root project directory, run `make test` to run unit tests.
 
 
+References
+----------
+- https://github.com/eginhard/cae-utd-utils
+
+
 License
 -------
 The code is distributed under the Creative Commons Attribution-ShareAlike

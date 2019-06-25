@@ -14,15 +14,19 @@ This needs to be run on a multi-core machine. Change the `n_cpus` variable in
 
 As an example, to evaluate the Spanish development MFCCs:
 
-    ./run_calcdists.sh ../features/mfcc/SP/sp.dev.gt_words.npz  # finish first
-    ./run_samediff.sh ../features/mfcc/SP/sp.dev.gt_words.npz
+    ./run_calcdists.sh ../features/mfcc/TU/tu.dev.gt_words.npz  # finish first
+    ./run_samediff.sh ../features/mfcc/TU/tu.dev.gt_words.npz
 
 
 Results
 -------
 SWDP average precision:
 
-- Spanish dev: 0.19288643880022374
-- Spanish eval: 0.29650854702289764
+- CH dev: 0.15380600205939557
+- CR dev: 0.1327048322151065
+- HA dev: 0.2136869761981348
+- SP dev: 0.19288643880022374
+- SW dev: 0.1092838447621266
+- TU dev: 0.18624635232225878
 
-*To-do*
+- SP eval: 0.29650854702289764
