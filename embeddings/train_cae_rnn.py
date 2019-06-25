@@ -175,8 +175,8 @@ def train_cae(options_dict):
         train_speakers = []
         for cur_lang in train_languages:
             cur_npz_fn = path.join(
-            "data", cur_lang, "train." + train_tag + ".npz"
-            )
+                "data", cur_lang, "train." + train_tag + ".npz"
+                )
             (cur_train_x, cur_train_labels, cur_train_lengths, cur_train_keys,
                 cur_train_speakers) = data_io.load_data_from_npz(cur_npz_fn,
                 min_length)
@@ -516,7 +516,7 @@ def check_argv():
     parser.add_argument(
         "train_lang", type=str,
         help="GlobalPhone training language {BG, CH, CR, CZ, FR, GE, HA, KO, "
-        "PL, PO, RU, SP, SW, TH, TU, VN}",
+        "PL, PO, RU, SP, SW, TH, TU, VN} or combination (e.g. BG+CH)",
         )
     parser.add_argument(
         "--val_lang", type=str, help="validation language",
