@@ -146,6 +146,7 @@ def filter_data(data, labels, lengths, keys, speakers,
                 filtered_lengths.append(lengths[i])
                 filtered_keys.append(keys[i])
                 filtered_speakers.append(speakers[i])
+                print(".", end="")
 
         data = filtered_data
         labels = filtered_labels
@@ -158,7 +159,7 @@ def filter_data(data, labels, lengths, keys, speakers,
         print("Maximum no. of types:", n_max_types)
 
         # Find valid types
-        types = Counter(labels).most_common(n_max_types)
+        types = [i[0] for i in Counter(labels).most_common(n_max_types)]
 
         # Filter
         filtered_data = []
@@ -173,6 +174,7 @@ def filter_data(data, labels, lengths, keys, speakers,
                 filtered_lengths.append(lengths[i])
                 filtered_keys.append(keys[i])
                 filtered_speakers.append(speakers[i])
+                print(".", end="")
 
         data = filtered_data
         labels = filtered_labels
