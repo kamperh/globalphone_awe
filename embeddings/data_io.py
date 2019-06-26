@@ -26,7 +26,7 @@ def load_data_from_npz(npz_fn, min_length=None):
     lengths = []
     keys = []
     n_items = 0
-    for utt_key in sorted(npz):
+    for utt_key in tqdm(sorted(npz)):
         cur_x = npz[utt_key]
         if min_length is not None and len(cur_x) <= min_length:
             continue
