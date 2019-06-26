@@ -39,7 +39,7 @@ def load_data_from_npz(npz_fn, min_length=None):
         speakers.append(speaker)
         lengths.append(len(cur_x))
         n_items += 1
-    print("No. items:", n_items)
+    # print("No. items:", n_items)
     print("E.g. item shape:", x[0].shape)
     return (x, labels, lengths, keys, speakers)
 
