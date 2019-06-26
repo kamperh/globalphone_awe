@@ -56,6 +56,7 @@ default_options_dict = {
                                             # will be used (instead of the
                                             # validation best)
         "n_val_interval": 1,
+        "n_min_tokens_per_type": None       # if None, no filter is applied
         "rnd_seed": 1,
     }
 
@@ -134,6 +135,11 @@ def train_rnn(options_dict):
             (cur_train_x, cur_train_labels, cur_train_lengths, cur_train_keys,
                 cur_train_speakers) = data_io.load_data_from_npz(cur_npz_fn,
                 None)
+            (cur_train_x, cur_train_labels, cur_train_lengths, cur_train_keys,
+                cur_train_speakers) = data_io.filter_data(cur_train_x,
+                cur_train_labels, cur_train_lengths, cur_train_keys,
+                cur_train_speakers,
+                n_min_tokens_per_type=options_dict["n_min_tokens_per_type"])
             train_x.extend(cur_train_x)
             train_labels.extend(cur_train_labels)
             train_lengths.extend(cur_train_lengths)
@@ -147,6 +153,11 @@ def train_rnn(options_dict):
             )
         train_x, train_labels, train_lengths, train_keys, train_speakers = (
             data_io.load_data_from_npz(npz_fn, None)
+            )
+        train_x, train_labels, train_lengths, train_keys, train_speakers = (
+            data_io.filter_data(train_x, train_labels, train_lengths,
+            train_keys, train_speakers,
+            n_min_tokens_per_type=options_dict["n_min_tokens_per_type"])
             )
 
     # Convert training labels to integers

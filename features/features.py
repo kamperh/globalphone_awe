@@ -105,7 +105,7 @@ def extract_vad(feat_dict, vad_dict):
     output_dict = {}
     for utt_key in tqdm(sorted(feat_dict)):
         if utt_key not in vad_dict:
-            print("Warning: missing VAD for utterance", utt_key)
+            print("Warning: Missing VAD for utterance", utt_key)
             continue
         for (start, end) in vad_dict[utt_key]:
             segment_key = utt_key + "_{:06d}-{:06d}".format(start, end)

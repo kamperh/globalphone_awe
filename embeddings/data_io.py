@@ -6,6 +6,7 @@ Contact: kamperh@gmail.com
 Date: 2018, 2019
 """
 
+from collections import Counter
 from os import path
 import numpy as np
 import sys
@@ -39,6 +40,51 @@ def load_data_from_npz(npz_fn, min_length=None):
     print("No. items:", n_items)
     print("E.g. item shape:", x[0].shape)
     return (x, labels, lengths, keys, speakers)
+
+
+def filter_data(data, labels, lengths, keys, speakers,
+        n_min_tokens_per_type=None):
+    """
+    Filter the output from `load_data_from_npz` based on specifications.
+
+    Return
+    ------
+    filtered_data, filtered_labels, filtered_keys, filtered_speakers : list,
+            list, list, list
+    """
+
+    filtered = False
+    filtered_data = []
+    filtered_labels = []
+    filtered_keys = []
+    filtered_speakers = []
+
+    if n_min_tokens_per_type is not None:
+
+        filtered = True
+        print("Filtering: Minimum tokens per type")
+
+        # Find valid types
+        types = []
+        counts = Counter(labels)
+        for key in counts:
+            if counts[key] >= n_min_tokens_per_type:
+                types.append(key)
+
+        # Filter
+        for i in range(len(data)):
+            if labels[i] in types:
+                filtered_data.append(data[i])
+                filtered_labels.append(labels[i])
+                filtered_keys.append(keys[i])
+                filtered_speakers.append(speakers[i])
+
+    if filtered:
+        return (
+            filtered_data, filtered_labels, filtered_keys, filtered_speakers
+            )
+    else:
+        return (data, labels, lengths, keys, speakers)
 
 
 def trunc_and_limit_dim(x, lengths, d_frame, max_length):
@@ -77,4 +123,3 @@ def pad_sequences(x, n_padded, center_padded=True, return_mask=False):
         return padded_x, lengths, mask_x
     else:
         return padded_x, lengths
-

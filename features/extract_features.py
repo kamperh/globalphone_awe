@@ -90,7 +90,7 @@ def shorten_to_wav(language, speakers, output_dir):
                 utils.shell(shorten_bin + " -x " + shorten_fn + " " + raw_fn)
             if not path.isfile(raw_fn):
                 print(
-                    "Warning: file not converted:", path.split(shorten_fn)[-1]
+                    "Warning: File not converted:", path.split(shorten_fn)[-1]
                     )
                 continue
             # assert path.isfile(raw_fn)
