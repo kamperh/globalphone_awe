@@ -8,6 +8,7 @@ Date: 2018, 2019
 
 from collections import Counter
 from os import path
+from tqdm import tqdm
 import numpy as np
 import sys
 
@@ -25,18 +26,17 @@ def load_data_from_npz(npz_fn, min_length=None):
     lengths = []
     keys = []
     n_items = 0
-    for utt_key in sorted(npz):
-        cur_x = npz[utt_key]
-        if min_length is not None and len(cur_x) <= min_length:
+    for utt_key in tqdm(sorted(npz)):
+        if min_length is not None and len(npz[utt_key]) <= min_length:
             continue
         keys.append(utt_key)
-        x.append(cur_x)
+        x.append(npz[utt_key])
         utt_key_split = utt_key.split("_")
         word = utt_key_split[0]
         speaker = utt_key_split[1]
         labels.append(word)
         speakers.append(speaker)
-        lengths.append(len(cur_x))
+        lengths.append(npz[utt_key].shape[0])
         n_items += 1
     print("No. items:", n_items)
     print("E.g. item shape:", x[0].shape)

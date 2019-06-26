@@ -129,7 +129,6 @@ def train_rnn(options_dict):
         train_keys = []
         train_speakers = []
         for cur_lang in train_languages:
-            print(datetime.now())
             cur_npz_fn = path.join(
                 "data", cur_lang, "train." + options_dict["train_tag"] + ".npz"
                 )
