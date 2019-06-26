@@ -110,6 +110,7 @@ def load_data_from_npz(npz_fn, min_length=None):
 #     else:
 #         return (data, labels, lengths, keys, speakers)
 
+
 def filter_data(data, labels, lengths, keys, speakers,
         n_min_tokens_per_type=None, n_max_types=None):
     """
@@ -179,8 +180,8 @@ def filter_data(data, labels, lengths, keys, speakers,
         keys = filtered_keys
         speakers = filtered_speakers
 
-    print("No. types:", len(Counter(filtered_labels)))
-    print("No. tokens:", len(filtered_labels))
+    print("No. types:", len(Counter(labels)))
+    print("No. tokens:", len(labels))
     return (data, labels, lengths, keys, speakers)
 
 
