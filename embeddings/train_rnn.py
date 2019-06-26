@@ -56,7 +56,7 @@ default_options_dict = {
                                             # will be used (instead of the
                                             # validation best)
         "n_val_interval": 1,
-        "n_min_tokens_per_type": None,      # if None, no filter is applied
+        "n_min_tokens_per_type": 3,      # if None, no filter is applied
         "rnd_seed": 1,
     }
 
@@ -129,7 +129,6 @@ def train_rnn(options_dict):
         train_keys = []
         train_speakers = []
         for cur_lang in train_languages:
-            print(datetime.now())
             cur_npz_fn = path.join(
                 "data", cur_lang, "train." + options_dict["train_tag"] + ".npz"
                 )
