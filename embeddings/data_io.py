@@ -44,6 +44,72 @@ def load_data_from_npz(npz_fn, min_length=None):
     return (x, labels, lengths, keys, speakers)
 
 
+# def filter_data(data, labels, lengths, keys, speakers,
+#         n_min_tokens_per_type=None, n_max_types=None):
+#     """
+#     Filter the output from `load_data_from_npz` based on specifications.
+
+#     Return
+#     ------
+#     filtered_data, filtered_labels, filtered_lengths filtered_keys,
+#             filtered_speakers : list, list, list, list
+#     """
+
+#     filtered = False
+#     filtered_data = []
+#     filtered_labels = []
+#     filtered_lengths = []
+#     filtered_keys = []
+#     filtered_speakers = []
+
+#     if n_min_tokens_per_type is not None:
+
+#         filtered = True
+#         print("Minimum tokens per type:", n_min_tokens_per_type)
+
+#         # Find valid types
+#         types = []
+#         counts = Counter(labels)
+#         for key in counts:
+#             if counts[key] >= n_min_tokens_per_type:
+#                 types.append(key)
+
+#         # Filter
+#         for i in range(len(data)):
+#             if labels[i] in types:
+#                 filtered_data.append(data[i])
+#                 filtered_labels.append(labels[i])
+#                 filtered_lengths.append(lengths[i])
+#                 filtered_keys.append(keys[i])
+#                 filtered_speakers.append(speakers[i])
+
+#     if n_max_types is not None:
+
+#         filtered = True
+#         print("Maximum no. of types:", n_max_types)
+
+#         # Find valid types
+#         types = Counter(labels).most_common(n_max_types)
+
+#         # Filter
+#         for i in range(len(data)):
+#             if labels[i] in types:
+#                 filtered_data.append(data[i])
+#                 filtered_labels.append(labels[i])
+#                 filtered_lengths.append(lengths[i])
+#                 filtered_keys.append(keys[i])
+#                 filtered_speakers.append(speakers[i])
+
+#     if filtered:
+#         print("No. types:", len(Counter(filtered_labels)))
+#         print("No. tokens:", len(filtered_labels))
+#         return (
+#             filtered_data, filtered_labels, filtered_lengths, filtered_keys,
+#             filtered_speakers
+#             )
+#     else:
+#         return (data, labels, lengths, keys, speakers)
+
 def filter_data(data, labels, lengths, keys, speakers,
         n_min_tokens_per_type=None, n_max_types=None):
     """
@@ -51,20 +117,12 @@ def filter_data(data, labels, lengths, keys, speakers,
 
     Return
     ------
-    filtered_data, filtered_labels, filtered_lengths filtered_keys,
-            filtered_speakers : list, list, list, list
+    data, labels, lengths keys, speakers : list, list, list, list
+        The filtered lists.
     """
-
-    filtered = False
-    filtered_data = []
-    filtered_labels = []
-    filtered_lengths = []
-    filtered_keys = []
-    filtered_speakers = []
 
     if n_min_tokens_per_type is not None:
 
-        filtered = True
         print("Minimum tokens per type:", n_min_tokens_per_type)
 
         # Find valid types
@@ -75,6 +133,11 @@ def filter_data(data, labels, lengths, keys, speakers,
                 types.append(key)
 
         # Filter
+        filtered_data = []
+        filtered_labels = []
+        filtered_lengths = []
+        filtered_keys = []
+        filtered_speakers = []
         for i in range(len(data)):
             if labels[i] in types:
                 filtered_data.append(data[i])
@@ -83,15 +146,25 @@ def filter_data(data, labels, lengths, keys, speakers,
                 filtered_keys.append(keys[i])
                 filtered_speakers.append(speakers[i])
 
+        data = filtered_data
+        labels = filtered_labels
+        lengths = filtered_lengths
+        keys = filtered_keys
+        speakers = filtered_speakers
+
     if n_max_types is not None:
 
-        filtered = True
         print("Maximum no. of types:", n_max_types)
 
         # Find valid types
         types = Counter(labels).most_common(n_max_types)
 
         # Filter
+        filtered_data = []
+        filtered_labels = []
+        filtered_lengths = []
+        filtered_keys = []
+        filtered_speakers = []
         for i in range(len(data)):
             if labels[i] in types:
                 filtered_data.append(data[i])
@@ -100,15 +173,15 @@ def filter_data(data, labels, lengths, keys, speakers,
                 filtered_keys.append(keys[i])
                 filtered_speakers.append(speakers[i])
 
-    if filtered:
-        print("No. types:", len(Counter(filtered_labels)))
-        print("No. tokens:", len(filtered_labels))
-        return (
-            filtered_data, filtered_labels, filtered_lengths, filtered_keys,
-            filtered_speakers
-            )
-    else:
-        return (data, labels, lengths, keys, speakers)
+        data = filtered_data
+        labels = filtered_labels
+        lengths = filtered_lengths
+        keys = filtered_keys
+        speakers = filtered_speakers
+
+    print("No. types:", len(Counter(filtered_labels)))
+    print("No. tokens:", len(filtered_labels))
+    return (data, labels, lengths, keys, speakers)
 
 
 def trunc_and_limit_dim(x, lengths, d_frame, max_length):
