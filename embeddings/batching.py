@@ -391,6 +391,7 @@ def get_pair_list(labels, both_directions=True, n_max_pairs=None):
             # if both_directions:
             #     match_list.append((cur_match_i, n))
     if n_max_pairs is not None:
+        random.seed(1)  # use the same list across different models
         random.shuffle(match_list)
         match_list = match_list[:n_max_pairs]
     if both_directions:
