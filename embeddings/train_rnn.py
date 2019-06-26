@@ -56,7 +56,7 @@ default_options_dict = {
                                             # will be used (instead of the
                                             # validation best)
         "n_val_interval": 1,
-        "n_min_tokens_per_type": None       # if None, no filter is applied
+        "n_min_tokens_per_type": None,      # if None, no filter is applied
         "rnd_seed": 1,
     }
 
