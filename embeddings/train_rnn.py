@@ -56,7 +56,7 @@ default_options_dict = {
                                             # will be used (instead of the
                                             # validation best)
         "n_val_interval": 1,
-        "n_min_tokens_per_type": 3,      # if None, no filter is applied
+        "n_min_tokens_per_type": None,      # if None, no filter is applied
         "rnd_seed": 1,
     }
 
@@ -226,7 +226,6 @@ def train_rnn(options_dict):
     print("Writing:", options_dict_fn)
     with open(options_dict_fn, "wb") as f:
         pickle.dump(options_dict, f, -1)
-
 
     # Validation function
     def samediff_val(normalise=True):
