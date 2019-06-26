@@ -162,10 +162,6 @@ def train_rnn(options_dict):
 
     # Convert training labels to integers
     train_label_set = list(set(train_labels))
-    from collections import Counter
-    c = Counter(train_labels)
-    print(len(c))
-    print(c)
     label_to_id = {}
     for i, label in enumerate(sorted(train_label_set)):
         label_to_id[label] = i
