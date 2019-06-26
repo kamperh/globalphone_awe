@@ -57,8 +57,14 @@ def build_model(x, x_lengths, options_dict):
             x, options_dict
             )
         model_dict["encoding"] = siamese["output"]
+    elif options_dict["script"] == "train_rnn":
+        import train_rnn
+        rnn = train_rnn.build_rnn_from_options_dict(
+            x, x_lengths, options_dict
+            )
+        model_dict["encoding"] = rnn["encoding"]
     else:
-        assert False
+        assert False, "model type not supported"
     return model_dict
 
 
