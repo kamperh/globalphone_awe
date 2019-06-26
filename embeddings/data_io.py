@@ -49,20 +49,21 @@ def filter_data(data, labels, lengths, keys, speakers,
 
     Return
     ------
-    filtered_data, filtered_labels, filtered_keys, filtered_speakers : list,
-            list, list, list
+    filtered_data, filtered_labels, filtered_lengths filtered_keys,
+            filtered_speakers : list, list, list, list
     """
 
     filtered = False
     filtered_data = []
     filtered_labels = []
+    filtered_lengths = []
     filtered_keys = []
     filtered_speakers = []
 
     if n_min_tokens_per_type is not None:
 
         filtered = True
-        print("Filtering: Minimum tokens per type:", n_min_tokens_per_type)
+        print("Minimum tokens per type:", n_min_tokens_per_type)
 
         # Find valid types
         types = []
@@ -76,12 +77,14 @@ def filter_data(data, labels, lengths, keys, speakers,
             if labels[i] in types:
                 filtered_data.append(data[i])
                 filtered_labels.append(labels[i])
+                filtered_lengths.append(lengths[i])
                 filtered_keys.append(keys[i])
                 filtered_speakers.append(speakers[i])
 
     if filtered:
         return (
-            filtered_data, filtered_labels, filtered_keys, filtered_speakers
+            filtered_data, filtered_labels, filtered_lengths, filtered_keys,
+            filtered_speakers
             )
     else:
         return (data, labels, lengths, keys, speakers)
