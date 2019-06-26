@@ -221,6 +221,13 @@ def train_rnn(options_dict):
     print(datetime.now())
     print("Training model")
 
+    # Save options_dict
+    options_dict_fn = path.join(model_dir, "options_dict.pkl")
+    print("Writing:", options_dict_fn)
+    with open(options_dict_fn, "wb") as f:
+        pickle.dump(options_dict, f, -1)
+
+
     # Validation function
     def samediff_val(normalise=True):
         # Embed validation
@@ -290,12 +297,6 @@ def train_rnn(options_dict):
     print("Writing:", record_dict_fn)
     with open(record_dict_fn, "wb") as f:
         pickle.dump(record_dict, f, -1)
-
-    # Save options_dict
-    options_dict_fn = path.join(model_dir, "options_dict.pkl")
-    print("Writing:", options_dict_fn)
-    with open(options_dict_fn, "wb") as f:
-        pickle.dump(options_dict, f, -1)
 
 
     # FINAL EXTRINSIC EVALUATION
