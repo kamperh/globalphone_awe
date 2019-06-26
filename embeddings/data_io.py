@@ -62,7 +62,7 @@ def filter_data(data, labels, lengths, keys, speakers,
     if n_min_tokens_per_type is not None:
 
         filtered = True
-        print("Filtering: Minimum tokens per type")
+        print("Filtering: Minimum tokens per type:", n_min_tokens_per_type)
 
         # Find valid types
         types = []
