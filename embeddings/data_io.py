@@ -71,6 +71,7 @@ def filter_data(data, labels, lengths, keys, speakers,
         for key in counts:
             if counts[key] >= n_min_tokens_per_type:
                 types.append(key)
+        print("No. types:", types)
 
         # Filter
         for i in range(len(data)):

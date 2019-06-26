@@ -170,7 +170,7 @@ def train_rnn(options_dict):
         train_y.append(label_to_id[label])
     train_y = np.array(train_y, dtype=NP_ITYPE)
     options_dict["n_classes"] = len(label_to_id)
-    print("No. classes:", options_dict["n_classes"])
+    print("Total no. classes:", options_dict["n_classes"])
 
     # Validation data
     if options_dict["val_lang"] is not None:
