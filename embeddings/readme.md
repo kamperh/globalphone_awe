@@ -14,12 +14,19 @@ languages by giving the "all" argument.
 
 Correspondence autoencoder RNN
 ------------------------------
-Train a CAE-RNN on Spanish ground truth segments:
+Train a CAE-RNN on Spanish UTD segments:
 
     ./train_cae_rnn.py --pretrain_usefinal --extrinsic_usefinal \
         --ae_n_val_interval 14 --ae_n_epochs 15 --cae_n_epochs 3 \
-        --train_tag utd --ae_batch_size 300 --cae_batch_size 600 \
-        --val_lang CH CH
+        --ae_batch_size 300 --cae_batch_size 600 \
+        --train_tag utd --val_lang SP SP
+
+Train a CNN-RNN on Spanish ground truth segments:
+
+    ./train_cae_rnn.py --pretrain_usefinal \
+        --ae_n_val_interval 14 --ae_n_epochs 15 --cae_n_epochs 25 \
+        --ae_batch_size 300 --cae_batch_size 300 --n_max_pairs 100000 \
+        --train_tag gt --val_lang SP SP
 
 Evaluate the model:
 

@@ -45,7 +45,7 @@ def load_data_from_npz(npz_fn, min_length=None):
 
 
 def filter_data(data, labels, lengths, keys, speakers,
-        n_min_tokens_per_type=None):
+        n_min_tokens_per_type=None, n_max_types=None):
     """
     Filter the output from `load_data_from_npz` based on specifications.
 
@@ -73,6 +73,23 @@ def filter_data(data, labels, lengths, keys, speakers,
         for key in counts:
             if counts[key] >= n_min_tokens_per_type:
                 types.append(key)
+
+        # Filter
+        for i in range(len(data)):
+            if labels[i] in types:
+                filtered_data.append(data[i])
+                filtered_labels.append(labels[i])
+                filtered_lengths.append(lengths[i])
+                filtered_keys.append(keys[i])
+                filtered_speakers.append(speakers[i])
+
+    if n_max_types is not None:
+
+        filtered = True
+        print("Maximum no. of types:", n_max_types)
+
+        # Find valid types
+        types = Counter(labels).most_common(n_max_types)
 
         # Filter
         for i in range(len(data)):
