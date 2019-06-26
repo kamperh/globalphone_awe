@@ -45,9 +45,9 @@ def build_model(x, x_lengths, options_dict):
         model_dict["output"] = vae["decoder_output"]
         model_dict["encoding"] = vae["latent_layer"]["z_mean"]
         model_dict["mask"] = vae["mask"]
-    elif options_dict["script"] == "train_siamese":
-        import train_siamese
-        siamese = train_siamese.build_siamese_from_options_dict(
+    elif options_dict["script"] == "train_siamese_rnn":
+        import train_siamese_rnn
+        siamese = train_siamese_rnn.build_siamese_from_options_dict(
             x, x_lengths, options_dict
             )
         model_dict["encoding"] = siamese["output"]

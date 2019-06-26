@@ -16,7 +16,10 @@ Correspondence autoencoder RNN
 ------------------------------
 Train a CAE-RNN on Spanish ground truth segments:
 
-    ./train_cae_rnn.py --ae_n_epochs 5 --cae_n_epochs 25 --val_lang SP SP
+    ./train_cae_rnn.py --pretrain_usefinal --extrinsic_usefinal \
+        --ae_n_val_interval 14 --ae_n_epochs 15 --cae_n_epochs 3 \
+        --train_tag utd --ae_batch_size 300 --cae_batch_size 600 \
+        --val_lang CH CH
 
 Evaluate the model:
 
