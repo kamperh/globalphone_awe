@@ -360,6 +360,11 @@ def check_argv():
         default=default_options_dict["n_epochs"]
         )
     parser.add_argument(
+        "--n_min_tokens_per_type", type=int,
+        help="minimum number of tokens per type (default: %(default)s)",
+        default=default_options_dict["n_min_tokens_per_type"]
+        )
+    parser.add_argument(
         "--n_max_types", type=int,
         help="maximum number of types per language (default: %(default)s)",
         default=default_options_dict["n_max_types"]
@@ -415,6 +420,7 @@ def main():
     options_dict["train_lang"] = args.train_lang
     options_dict["val_lang"] = args.val_lang
     options_dict["n_epochs"] = args.n_epochs
+    options_dict["n_min_tokens_per_type"] = args.n_min_tokens_per_type
     options_dict["n_max_types"] = args.n_max_types
     options_dict["n_max_tokens"] = args.n_max_tokens
     options_dict["n_max_tokens_per_type"] = args.n_max_tokens_per_type
