@@ -59,7 +59,7 @@ default_options_dict = {
         "n_min_tokens_per_type": None,         # if None, no filter is applied
         "n_max_types": None,
         "n_max_tokens": None,
-        "n_max_tokens_per_type": None
+        "n_max_tokens_per_type": None,
         "rnd_seed": 1,
     }
 
