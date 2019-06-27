@@ -10,6 +10,7 @@ from collections import Counter
 from os import path
 from tqdm import tqdm
 import numpy as np
+import random
 import sys
 
 sys.path.append(path.join("..", "src"))
@@ -45,9 +46,13 @@ def load_data_from_npz(npz_fn, min_length=None):
 
 
 def filter_data(data, labels, lengths, keys, speakers,
-        n_min_tokens_per_type=None, n_max_types=None):
+        n_min_tokens_per_type=None, n_max_types=None, n_max_tokens=None):
     """
     Filter the output from `load_data_from_npz` based on specifications.
+
+    Each filter is applied independelty, so they could influence each other.
+    E.g. `n_max_tokens` could further reduce the number of types if it is used
+    in conjunction with `n_max_types`.
 
     Return
     ------
@@ -55,16 +60,12 @@ def filter_data(data, labels, lengths, keys, speakers,
         The filtered lists.
     """
 
-    if n_min_tokens_per_type is not None:
+    if n_max_types is not None:
 
-        print("Minimum tokens per type:", n_min_tokens_per_type)
+        print("Maximum no. of types:", n_max_types)
 
         # Find valid types
-        types = []
-        counts = Counter(labels)
-        for key in counts:
-            if counts[key] >= n_min_tokens_per_type:
-                types.append(key)
+        types = [i[0] for i in Counter(labels).most_common(n_max_types)]
 
         # Filter
         filtered_data = []
@@ -86,12 +87,43 @@ def filter_data(data, labels, lengths, keys, speakers,
         keys = filtered_keys
         speakers = filtered_speakers
 
-    if n_max_types is not None:
+    if n_max_tokens is not None:
 
-        print("Maximum no. of types:", n_max_types)
+        print("Maximum no. of tokens:", n_max_tokens)
+
+        # Filter
+        filtered_data = []
+        filtered_labels = []
+        filtered_lengths = []
+        filtered_keys = []
+        filtered_speakers = []
+        indices = list(range(len(data)))
+        random.seed(1)
+        random.shuffle(indices)
+        # for i in range(len(data)):
+        for i in indices[:n_max_tokens]
+            filtered_data.append(data[i])
+            filtered_labels.append(labels[i])
+            filtered_lengths.append(lengths[i])
+            filtered_keys.append(keys[i])
+            filtered_speakers.append(speakers[i])
+
+        data = filtered_data
+        labels = filtered_labels
+        lengths = filtered_lengths
+        keys = filtered_keys
+        speakers = filtered_speakers
+
+    if n_min_tokens_per_type is not None:
+
+        print("Minimum tokens per type:", n_min_tokens_per_type)
 
         # Find valid types
-        types = [i[0] for i in Counter(labels).most_common(n_max_types)]
+        types = []
+        counts = Counter(labels)
+        for key in counts:
+            if counts[key] >= n_min_tokens_per_type:
+                types.append(key)
 
         # Filter
         filtered_data = []

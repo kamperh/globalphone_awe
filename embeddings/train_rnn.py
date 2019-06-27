@@ -58,6 +58,7 @@ default_options_dict = {
         "n_val_interval": 1,
         "n_min_tokens_per_type": None,         # if None, no filter is applied
         "n_max_types": None,
+        "n_max_tokens": None,
         "rnd_seed": 1,
     }
 
@@ -141,7 +142,8 @@ def train_rnn(options_dict):
                 cur_train_labels, cur_train_lengths, cur_train_keys,
                 cur_train_speakers,
                 n_min_tokens_per_type=options_dict["n_min_tokens_per_type"],
-                n_max_types=options_dict["n_max_types"])
+                n_max_types=options_dict["n_max_types"],
+                n_max_tokens=options_dict["n_max_tokens"],)
             train_x.extend(cur_train_x)
             train_labels.extend(cur_train_labels)
             train_lengths.extend(cur_train_lengths)
@@ -160,7 +162,8 @@ def train_rnn(options_dict):
             data_io.filter_data(train_x, train_labels, train_lengths,
             train_keys, train_speakers,
             n_min_tokens_per_type=options_dict["n_min_tokens_per_type"],
-            n_max_types=options_dict["n_max_types"])
+            n_max_types=options_dict["n_max_types"],
+            n_max_tokens=options_dict["n_max_tokens"],)
             )
 
     # Convert training labels to integers
@@ -359,6 +362,11 @@ def check_argv():
         default=default_options_dict["n_max_types"]
         )
     parser.add_argument(
+        "--n_max_tokens", type=int,
+        help="maximum number of tokens per language (default: %(default)s)",
+        default=default_options_dict["n_max_tokens"]
+        )
+    parser.add_argument(
         "--batch_size", type=int,
         help="size of mini-batch (default: %(default)s)",
         default=default_options_dict["batch_size"]
@@ -399,6 +407,7 @@ def main():
     options_dict["val_lang"] = args.val_lang
     options_dict["n_epochs"] = args.n_epochs
     options_dict["n_max_types"] = args.n_max_types
+    options_dict["n_max_tokens"] = args.n_max_tokens
     options_dict["batch_size"] = args.batch_size
     options_dict["train_tag"] = args.train_tag
     options_dict["extrinsic_usefinal"] = args.extrinsic_usefinal
