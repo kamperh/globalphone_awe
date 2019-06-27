@@ -90,6 +90,34 @@ def filter_data(data, labels, lengths, keys, speakers,
         keys = filtered_keys
         speakers = filtered_speakers
 
+    if n_max_tokens_per_type is not None:
+
+        print("Maximum tokens per type:", n_max_tokens_per_type)
+
+        # Filter
+        filtered_data = []
+        filtered_labels = []
+        filtered_lengths = []
+        filtered_keys = []
+        filtered_speakers = []
+        indices = list(range(len(data)))
+        random.shuffle(indices)
+        tokens_per_type = Counter()
+        for i in indices:
+            if tokens_per_type[labels[i]] < n_max_tokens_per_type:
+                filtered_data.append(data[i])
+                filtered_labels.append(labels[i])
+                filtered_lengths.append(lengths[i])
+                filtered_keys.append(keys[i])
+                filtered_speakers.append(speakers[i])
+                tokens_per_type[labels[i]] += 1
+
+        data = filtered_data
+        labels = filtered_labels
+        lengths = filtered_lengths
+        keys = filtered_keys
+        speakers = filtered_speakers
+
     if n_max_tokens is not None:
 
         print("Maximum no. of tokens:", n_max_tokens)
@@ -140,34 +168,6 @@ def filter_data(data, labels, lengths, keys, speakers,
                 filtered_lengths.append(lengths[i])
                 filtered_keys.append(keys[i])
                 filtered_speakers.append(speakers[i])
-
-        data = filtered_data
-        labels = filtered_labels
-        lengths = filtered_lengths
-        keys = filtered_keys
-        speakers = filtered_speakers
-
-    if n_max_tokens_per_type is not None:
-
-        print("Maximum tokens per type:", n_max_tokens_per_type)
-
-        # Filter
-        filtered_data = []
-        filtered_labels = []
-        filtered_lengths = []
-        filtered_keys = []
-        filtered_speakers = []
-        indices = list(range(len(data)))
-        random.shuffle(indices)
-        tokens_per_type = Counter()
-        for i in indices:
-            if tokens_per_type[labels[i]] < n_max_tokens_per_type:
-                filtered_data.append(data[i])
-                filtered_labels.append(labels[i])
-                filtered_lengths.append(lengths[i])
-                filtered_keys.append(keys[i])
-                filtered_speakers.append(speakers[i])
-                tokens_per_type[labels[i]] += 1
 
         data = filtered_data
         labels = filtered_labels
