@@ -32,7 +32,7 @@ Train a CAE-RNN on Spanish UTD segments:
 Train a CNN-RNN on Spanish ground truth segments:
 
     ./train_cae_rnn.py --pretrain_usefinal \
-        --ae_n_val_interval 14 --ae_n_epochs 15 --cae_n_epochs 25 \
+        --ae_n_val_interval 14 --ae_n_epochs 15 --cae_n_epochs 15 \
         --n_max_pairs 100000 --train_tag gt --val_lang SP SP
 
 Evaluate the model:
