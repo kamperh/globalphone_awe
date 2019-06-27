@@ -101,7 +101,7 @@ def filter_data(data, labels, lengths, keys, speakers,
         random.seed(1)
         random.shuffle(indices)
         # for i in range(len(data)):
-        for i in indices[:n_max_tokens]
+        for i in indices[:n_max_tokens]:
             filtered_data.append(data[i])
             filtered_labels.append(labels[i])
             filtered_lengths.append(lengths[i])
