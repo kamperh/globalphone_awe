@@ -72,7 +72,11 @@ default_options_dict = {
                                             # embedding dimensionality
         "n_max_pairs": None,
         "n_min_tokens_per_type": None,      # if None, no filter is applied
-        "n_max_types": None,
+        "n_max_types": None
+                n_max_tokens=options_dict["n_max_tokens"],
+                n_max_tokens_per_type=options_dict["n_max_tokens_per_type"],)        
+        "n_max_tokens": None,
+        "n_max_tokens_per_type": None,
         "rnd_seed": 1,
     }
 
@@ -187,7 +191,9 @@ def train_cae(options_dict):
                 cur_train_labels, cur_train_lengths, cur_train_keys,
                 cur_train_speakers,
                 n_min_tokens_per_type=options_dict["n_min_tokens_per_type"],
-                n_max_types=options_dict["n_max_types"])
+                n_max_types=options_dict["n_max_types"],
+                n_max_tokens=options_dict["n_max_tokens"],
+                n_max_tokens_per_type=options_dict["n_max_tokens_per_type"],)                
             train_x.extend(cur_train_x)
             train_labels.extend(cur_train_labels)
             train_lengths.extend(cur_train_lengths)
@@ -205,7 +211,9 @@ def train_cae(options_dict):
             data_io.filter_data(train_x, train_labels, train_lengths,
             train_keys, train_speakers,
             n_min_tokens_per_type=options_dict["n_min_tokens_per_type"],
-            n_max_types=options_dict["n_max_types"])
+            n_max_types=options_dict["n_max_types"],
+            n_max_tokens=options_dict["n_max_tokens"],
+            n_max_tokens_per_type=options_dict["n_max_tokens_per_type"],)
             )
 
     # Pretraining data (if specified)
@@ -552,6 +560,17 @@ def check_argv():
         default=default_options_dict["n_max_types"]
         )
     parser.add_argument(
+        "--n_max_tokens", type=int,
+        help="maximum number of tokens per language (default: %(default)s)",
+        default=default_options_dict["n_max_tokens"]
+        )
+    parser.add_argument(
+        "--n_max_tokens_per_type", type=int,
+        help="maximum number of tokens per type per language "
+        "(default: %(default)s)",
+        default=default_options_dict["n_max_tokens_per_type"]
+        )
+    parser.add_argument(
         "--ae_n_epochs", type=int,
         help="number of epochs of AE pre-training (default: %(default)s)",
         default=default_options_dict["ae_n_epochs"]
@@ -654,6 +673,8 @@ def main():
     options_dict["n_max_pairs"] = args.n_max_pairs
     options_dict["n_min_tokens_per_type"] = args.n_min_tokens_per_type
     options_dict["n_max_types"] = args.n_max_types
+    options_dict["n_max_tokens"] = args.n_max_tokens
+    options_dict["n_max_tokens_per_type"] = args.n_max_tokens_per_type
     options_dict["val_lang"] = args.val_lang
     options_dict["ae_n_epochs"] = args.ae_n_epochs
     options_dict["cae_n_epochs"] = args.cae_n_epochs
