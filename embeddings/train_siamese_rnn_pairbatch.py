@@ -136,6 +136,8 @@ class LabelledPairedBucketIterator(object):
                 seq = self.x_list[batch_indices[i]]
                 batch_x_padded[i, :length, :] = seq
 
+            print(batch_y)  # temp
+
             if self.speaker_ids is None:
                 yield (batch_x_padded, batch_x_lengths, batch_y)
             else:
