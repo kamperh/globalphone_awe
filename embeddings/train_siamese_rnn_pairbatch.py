@@ -364,7 +364,7 @@ def train_siamese(options_dict):
 
     # Train Siamese model
     val_model_fn = intermediate_model_fn
-    train_batch_iterator = batching.LabelledPairedBucketIterator(
+    train_batch_iterator = LabelledPairedBucketIterator(
         train_x, train_y, pair_list, options_dict["batch_size"],
         n_buckets=options_dict["n_buckets"], shuffle_every_epoch=True
         )
