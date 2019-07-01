@@ -124,10 +124,10 @@ def main():
         distances[word_matches == False]
         )
     print("-"*79)
-    print("Average precision:", sw_ap)
-    print("Precision-recall breakeven:", sw_prb)
-    print("SWDP average precision:", swdp_ap)
-    print("SWDP precision-recall breakeven:", swdp_prb)
+    print("Average precision: {:.8f}".format(sw_ap))
+    print("Precision-recall breakeven: {:.8f}".format(sw_prb))
+    print("SWDP average precision: {:.8f}".format(swdp_ap))
+    print("SWDP precision-recall breakeven: {:.8f}".format(swdp_prb))
     print("-"*79)
 
     print(datetime.now())

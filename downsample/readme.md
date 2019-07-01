@@ -11,10 +11,10 @@ Downsampling
 ------------
 Perform downsampling on MFCCs without deltas:
 
-    mkdir -p exp/TH
+    mkdir -p exp/SP
     ./downsample.py --technique resample --frame_dims 13 \
-        ../features/mfcc/TH/th.dev.gt_words.npz \
-        exp/TH/mfcc.dev.gt_words.downsample_10.npz 10
+        ../features/mfcc/SP/sp.dev.gt_words.npz \
+        exp/SP/mfcc.dev.gt_words.downsample_10.npz 10
 
 
 Evaluation
@@ -22,7 +22,7 @@ Evaluation
 Evaluate and analyse downsampled MFCCs without deltas:
 
     ../embeddings/eval_samediff.py --mvn \
-        exp/TH/mfcc.dev.gt_words.downsample_10.npz
+        exp/SP/mfcc.dev.gt_words.downsample_10.npz
     ../embeddings/analyse_embeds.py --normalize --word_type \
         guatemala,presidente,autoridades,candidatos,asesinato,presupuesto,vicepresidente,negociaciones,netanyahu,social,explotaciones \
         exp/SP/mfcc.dev.gt_words.downsample_10.npz
@@ -43,4 +43,6 @@ SWDP average precision:
 - KO dev: 0.13563458
 - TH dev: 0.08781202
 - VN dev: 0.02734849
+
+- SP eval: 0.19438775
 

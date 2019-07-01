@@ -136,8 +136,8 @@ def train_fixed_epochs(n_epochs, optimizer, train_loss_tensor,
             log += ", train loss: " + str(train_loss)
             if validation_loss_tensor is not None:
                 log += ", val loss: " + str(validation_loss)
-                if (save_best_val_model_fn is not None and cur_validation_loss <
-                        best_validation_loss):
+                if (save_best_val_model_fn is not None and cur_validation_loss
+                        < best_validation_loss):
                     saver.save(session, save_best_val_model_fn)
                     best_validation_loss = cur_validation_loss
                     log += " *"

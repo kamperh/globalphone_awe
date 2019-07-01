@@ -45,7 +45,7 @@ default_options_dict = {
         "rnn_type": "gru",                  # "lstm", "gru", "rnn"
         "rnn_n_hiddens": [400, 400, 400],
         "ff_n_hiddens": [130],              # embedding dimensionality
-        "margin": 0.2,
+        "margin": 0.25,
         "learning_rate": 0.001,
         "rnn_keep_prob": 1.0,
         "ff_keep_prob": 1.0,
