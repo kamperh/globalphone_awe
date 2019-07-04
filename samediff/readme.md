@@ -29,7 +29,7 @@ SWDP average precision:
 - SW dev: 0.10928384
 - TU dev: 0.18624635
 
-- GE dev: 
-- KO dev: 
+- GE dev: 0.22482616
+- KO dev: 0.15748395
 
 - SP eval: 0.29650854
