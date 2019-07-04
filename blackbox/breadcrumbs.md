@@ -4,6 +4,9 @@ cd ../downsample
  exp/GE/mfcc.dev.filter1_gt.downsample_10.npz  10
 cd -
 ./npz_to_tsv.py ../downsample/exp/GE/mfcc.dev.filter1_gt.downsample_10.npz auto
+cd ../embeddings
+
+
 
 ./extract_analysis_features.py --analyse GE
 

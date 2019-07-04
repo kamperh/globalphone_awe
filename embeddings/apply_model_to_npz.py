@@ -142,7 +142,8 @@ def main():
     # Save embeddings
     model_dir, model_fn = path.split(args.model_fn)
     npz_fn = path.join(
-        model_dir, path.splitext(model_fn)[0] + "." + args.npz_fn
+        model_dir, path.splitext(model_fn)[0] + "." +
+        path.split(args.npz_fn)[-1]
         )
     print("Writing:", npz_fn)
     np.savez_compressed(npz_fn, **embed_dict)
