@@ -104,7 +104,7 @@ def filter_data(data, labels, lengths, keys, speakers,
         random.shuffle(indices)
         tokens_per_type = Counter()
         for i in indices:
-            if tokens_per_type[labels[i]] <= n_max_tokens_per_type:
+            if tokens_per_type[labels[i]] < n_max_tokens_per_type:
                 filtered_data.append(data[i])
                 filtered_labels.append(labels[i])
                 filtered_lengths.append(lengths[i])
