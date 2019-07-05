@@ -16,20 +16,20 @@ For instance, to obtain downsampled embeddings, run:
 
     cd ../downsample
     ./downsample.py --technique resample --frame_dims 13 \
-        ../blackbox/mfcc/RU/ru.dev.filter1_phone.npz \
-        exp/RU/mfcc.dev.filter1_phone.downsample_10.npz 10
+        ../blackbox/mfcc/GE/ge.dev.filter1_gt.npz \
+        exp/GE/mfcc.dev.filter1_gt.downsample_10.npz 10
     ../embeddings/eval_samediff.py --mvn \
-        exp/RU/mfcc.dev.filter1_phone.downsample_10.npz
+        exp/GE/mfcc.dev.filter1_gt.downsample_10.npz
     cd -
 
 To obtain embeddings from a particular mode, run:
 
     cd ../embeddings
     ./apply_model_to_npz.py \
-        models/RU.gt/train_cae_rnn/0bab597d5a/cae.best_val.ckpt \
-        ../blackbox/mfcc/RU/ru.dev.filter1_phone.npz
+        models/GE.gt/train_cae_rnn/15b3ecce63/cae.best_val.ckpt \
+        ../blackbox/mfcc/GE/ge.dev.filter1_gt.npz
     ./eval_samediff.py --mvn \
-        models/RU.gt/train_cae_rnn/0bab597d5a/cae.best_val.ru.dev.filter1_phone.npz
+        models/GE.gt/train_cae_rnn/15b3ecce63/cae.best_val.ge.dev.filter1_gt.npz
     cd -
 
 
@@ -39,7 +39,7 @@ To visualise embeddings, https://projector.tensorflow.org/ can be used. To
 generate the input required by this tool, run:
 
     ./npz_to_tsv.py \
-        ../downsample/exp/RU/mfcc.dev.filter2_phone.downsample_10.npz auto
+        ../embeddings/models/GE.gt/train_cae_rnn/15b3ecce63/cae.best_val.ge.dev.filter1_gt.npz
 
 and load the data into the tool.
 
@@ -49,75 +49,25 @@ Agglomerative clustering
 Clustering can be applied and visualised by running:
 
     ./hierarchical_clustering.py --n_samples 1000 \
-        ../embeddings/models/RU.gt/train_cae_rnn/0bab597d5a/cae.best_val.ru.dev.filter2_phone.npz
-    
+        ../embeddings/models/GE.gt/train_cae_rnn/15b3ecce63/cae.best_val.ge.dev.filter1_gt.npz
+
+Here, the colouring in the labels indicate the speaker for that token.
 
 
+Classifier analysis
+-------------------
+Perform speaker classification by training a multi-class logistic regression
+classifier on 80% of the data and then test on the remaining 20%:
 
+    ./logreg_speaker.py \
+        ../downsample/exp/GE/mfcc.dev.gt_words.downsample_10.npz
+    ./logreg_speaker.py \
+        ../embeddings/models/GE.gt/train_cae_rnn/15b3ecce63/cae.best_val.GE.val.npz
 
+Perform length (number of phones) classification:
 
-
-./extract_analysis_features.py --analyse GE
-cd ../downsample
-./downsample.py --technique resample --frame_dims 13 ../blackbox/mfcc/GE/ge.dev.filter1_gt.npz exp/GE/mfcc.dev.filter1_gt.downsample_10.npz  10
-cd -
-./npz_to_tsv.py ../downsample/exp/GE/mfcc.dev.filter1_gt.downsample_10.npz auto
-cd ../embeddings
-./apply_model_to_npz.py models/GE.gt/train_cae_rnn/15b3ecce63/cae.best_val.ckpt ../blackbox/mfcc/GE/ge.dev.filter1_gt.npz
-cd -
-npz_to_tsv.py ./npz_to_tsv.py ../embeddings/models/GE.gt/train_cae_rnn/15b3ecce63/cae.best_val.ge.dev.filter1_gt.npz auto
-
-./extract_analysis_features.py RU
-cd ../downsample
-./downsample.py --technique resample --frame_dims 13 ../blackbox/mfcc/RU/ru.dev.filter1_phone.npz exp/RU/mfcc.dev.filter1_phone.downsample_10.npz 10
-../embeddings/eval_samediff.py --mvn exp/RU/mfcc.dev.filter1_phone.downsample_10.npz
-cd ../embeddings
-./apply_model_to_npz.py models/RU.gt/train_cae_rnn/0bab597d5a/cae.best_val.ckpt ../blackbox/mfcc/RU/ru.dev.filter1_phone.npz
-./eval_samediff.py --mvn models/RU.gt/train_cae_rnn/0bab597d5a/cae.best_val.ru.dev.filter1_phone.npz
-cd ../blackbox
-./npz_to_tsv.py ../downsample/exp/RU/mfcc.dev.filter1_phone.downsample_10.npz auto
-./npz_to_tsv.py ../embeddings/models/RU.gt/train_cae_rnn/0bab597d5a/cae.best_val.ru.dev.filter1_phone.npz auto
-
-./extract_analysis_features.py RU
-cd ../downsample
-./downsample.py --technique resample --frame_dims 13 ../blackbox/mfcc/RU/ru.dev.filter2_phone.npz exp/RU/mfcc.dev.filter2_phone.downsample_10.npz 10
-../embeddings/eval_samediff.py --mvn exp/RU/mfcc.dev.filter2_phone.downsample_10.npz
-cd ../embeddings
-./apply_model_to_npz.py models/RU.gt/train_cae_rnn/0bab597d5a/cae.best_val.ckpt ../blackbox/mfcc/RU/ru.dev.filter2_phone.npz
-./eval_samediff.py --mvn models/RU.gt/train_cae_rnn/0bab597d5a/cae.best_val.ru.dev.filter2_phone.npz
-cd ../blackbox
-./npz_to_tsv.py ../downsample/exp/RU/mfcc.dev.filter2_phone.downsample_10.npz auto
-./npz_to_tsv.py ../embeddings/models/RU.gt/train_cae_rnn/0bab597d5a/cae.best_val.ru.dev.filter2_phone.npz auto
-
-./hierarchical_clustering.py --n_samples 1000 ../embeddings/models/RU.gt/train_cae_rnn/0bab597d5a/cae.best_val.ru.dev.filter2_phone.npz
-
-
-./analyse_pairs.py --pronunciation GE ../embeddings/models/GE.gt/train_cae_rnn/15b3ecce63/cae.best_val.ge.dev.filter1_gt.npz
-./analyse_pairs.py --pronunciation GE ../downsample/exp/GE/mfcc.dev.filter1_gt.downsample_10.npz
-
-./hierarchical_clustering.py --n_samples 1000 ../embeddings/models/GE.gt/train_cae_rnn/15b3ecce63/cae.best_val.ge.dev.filter1_gt.npz
-./hierarchical_clustering.py --n_samples 1000 ../downsample/exp/GE/mfcc.dev.filter1_gt.downsample_10.npz
-
-./hierarchical_clustering.py --n_samples 1000 ../embeddings/models/GE.gt/train_cae_rnn/15b3ecce63/cae.best_val.GE.val.npz
-./hierarchical_clustering.py --n_samples 1000 ../downsample/exp/GE/mfcc.dev.gt_words.downsample_10.npz
-
-./logreg_speaker.py ../downsample/exp/GE/mfcc.dev.gt_words.downsample_10.npz
-./logreg_speaker.py ../embeddings/models/GE.gt/train_cae_rnn/15b3ecce63/cae.best_val.GE.val.npz
-./logreg_speaker.py ../downsample/exp/GE/mfcc.dev.filter1_gt.downsample_10.npz
-./logreg_speaker.py ../embeddings/models/GE.gt/train_cae_rnn/15b3ecce63/cae.best_val.ge.dev.filter1_gt.npz
-
-
-./logreg_pronlength.py ../downsample/exp/GE/mfcc.dev.filter1_gt.downsample_10.npz GE
-./logreg_pronlength.py ../embeddings/models/GE.gt/train_cae_rnn/15b3ecce63/cae.best_val.ge.dev.filter1_gt.npz GE
-
-
-./extract_analysis_features.py --analyse GE
-
-./npz_to_tsv.py ../downsample/exp/RU/mfcc.dev.gt_words.downsample_10.npz auto
-./npz_to_tsv.py ../downsample/exp/GE/mfcc.dev.gt_words.downsample_10.npz auto
-./npz_to_tsv.py ../embeddings/models/GE.gt/train_cae_rnn/15b3ecce63/cae.best_val.GE.val.npz auto
-./npz_to_tsv.py ../embeddings/models/RU.gt/train_cae_rnn/0bab597d5a/cae.best_val.RU.val.npz auto
-
-
-./analyse_pairs.py ../embeddings/models/GE.gt/train_cae_rnn/15b3ecce63/cae.best_val.ge.dev.filter1_gt.npz
-
+    # To-do: should train and test on different sets here
+    ./logreg_pronlength.py \
+        ../downsample/exp/GE/mfcc.dev.filter1_gt.downsample_10.npz GE
+    ./logreg_pronlength.py \
+        ../embeddings/models/GE.gt/train_cae_rnn/15b3ecce63/cae.best_val.ge.dev.filter1_gt.npz GE
