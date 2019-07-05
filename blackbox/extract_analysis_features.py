@@ -91,7 +91,8 @@ def pronunciations_from_fa(word_fa_fn, phone_fa_fn):
             # Find phone sequence
             phone_sequence = []
             for (phone_start, phone_end, phone) in phone_fa[utt_key]:
-                if phone_start >= word_start and phone_start < word_end:
+                if (phone_start >= word_start and phone_start < word_end and
+                        phone != "sil"):
                     # Phone is in word
                     phone = phone.split("_")[0]
                     phone_sequence.append(phone)
@@ -159,7 +160,7 @@ def main():
             gp_alignments_dir, args.language, subset + ".ctm"
             )
         phone_fa_fn = path.join(
-            gp_alignments_dir, args.language, subset + ".phone.ctm"
+            gp_alignments_dir, args.language, subset + ".phone.ipa.ctm"
             )
         pronunciations_dict = pronunciations_from_fa(
             word_fa_fn, phone_fa_fn
