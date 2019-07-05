@@ -98,10 +98,16 @@ def main():
     n_embeds = 0
     X = []
     utt_keys = []
+    labels = []
+    speakers = []
     for utt_key in tqdm(sorted(embeddings)):
         utt_keys.append(utt_key)
         X.append(embeddings[utt_key])
-        # print(embeddings[utt_key].shape)
+        utt_key = utt_key.split("_")
+        label = utt_key[0]
+        speaker = utt_key[1]
+        labels.append(label)
+        speakers.append(speaker)
     X = np.array(X)
     print("No. embeddings:", X.shape[0])
     print("Embedding dimensionality:", X.shape[1])
@@ -112,16 +118,6 @@ def main():
 
     print("Calculating distances")
     distances = pdist(X, metric="cosine")
-
-    print("Getting labels and speakers")
-    labels = []
-    speakers = []
-    for utt_key in utt_keys:
-        utt_key = utt_key.split("_")
-        label = utt_key[0]
-        speaker = utt_key[1]
-        labels.append(label)
-        speakers.append(speaker)
 
     # Plot: Matching words
     print("Getting word matches")
