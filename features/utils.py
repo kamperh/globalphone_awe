@@ -37,7 +37,8 @@ def filter_words(fa_fn, output_fn, min_frames=50, min_chars=5):
                 start_frame = int(round(start*100))
                 end_frame = int(round(end*100))
                 if (end_frame - start_frame >= min_frames and len(label) >=
-                        min_chars and label != "<unk>"):
+                        min_chars and label != "<unk>" and label != "sil"
+                        and label != "?" and label != "spn"):
                     output_f.write(
                         "{}_{}_{:06d}-{:06d}\n".format(label, utt_key,
                         start_frame, end_frame + 1)
