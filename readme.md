@@ -75,6 +75,12 @@ Train and evaluate neural network acoustic word embedding models by running the
 steps in [embeddings/readme.md](embeddings/readme.md).
 
 
+Analyse embedding models
+------------------------
+Analyse different properties/aspects of the acoustic word embedding models by
+running the steps in [blackbox/readme.md](blackbox/readme.md)
+
+
 Unit tests
 ----------
 In the root project directory, run `make test` to run unit tests.
