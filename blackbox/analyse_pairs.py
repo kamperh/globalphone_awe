@@ -76,6 +76,15 @@ def generate_editdistance_array(labels):
     return edits
 
 
+def read_pronunciations(fn):
+    pronunciations = {}
+    with codecs.open(fn, "r", "utf-8") as f:
+        for line in f:
+            utt_key, pronunciation = line.strip().split()
+            pronunciations[utt_key] = pronunciation.split(",")
+    return pronunciations
+
+
 #-----------------------------------------------------------------------------#
 #                                MAIN FUNCTION                                #
 #-----------------------------------------------------------------------------#
@@ -175,11 +184,7 @@ def main():
         # Pronunciations
         pron_fn = path.join("lists", args.pronunciation, "dev.prons")
         print("Reading:", pron_fn)
-        pronunciations = {}
-        with codecs.open(pron_fn, "r", "utf-8") as f:
-            for line in f:
-                utt_key, pronunciation = line.strip().split()
-                pronunciations[utt_key] = pronunciation.split(",")
+        pronunciations = read_pronunciations(fn)
         pron_labels = []
         for utt_key in utt_keys:
             pron_labels.append(pronunciations[utt_key])

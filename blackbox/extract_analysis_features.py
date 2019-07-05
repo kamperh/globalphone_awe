@@ -108,7 +108,7 @@ def pronunciations_from_fa(word_fa_fn, phone_fa_fn):
 
 
 def filter_segment_keys(segment_keys, n_min_tokens_per_type=0,
-        n_max_tokens_per_type=np.inf):
+        n_max_tokens_per_type=np.inf, n_max_tokens=np.inf):
 
     random.seed(1)
     random.shuffle(segment_keys)
@@ -130,6 +130,10 @@ def filter_segment_keys(segment_keys, n_min_tokens_per_type=0,
                 n_max_tokens_per_type):
             filtered_keys.append(segment_keys[i])
             tokens_per_type[label] += 1
+
+    if n_max_tokens != np.inf:
+        random.shuffle(filtered_keys)
+        filtered_keys = filtered_keys[:n_max_tokens]
 
     return filtered_keys
 
@@ -160,6 +164,7 @@ def main():
             gp_alignments_dir, args.language, subset + ".ctm"
             )
         phone_fa_fn = path.join(
+            # gp_alignments_dir, args.language, subset + ".phone.ctm"
             gp_alignments_dir, args.language, subset + ".phone.ipa.ctm"
             )
         pronunciations_dict = pronunciations_from_fa(
@@ -178,7 +183,7 @@ def main():
         else:
             print("Using existing file:", pronunciations_fn)
 
-        # Write segments
+        # Write word list
         if not path.isfile(list_fn):
             print("Writing:", list_fn)
             with codecs.open(list_fn, "w", "utf-8") as f:
@@ -186,6 +191,51 @@ def main():
                     f.write(segment_key + "\n")
         else:
             print("Using existing file:", list_fn)
+
+        # Write individual phone list
+        phone_list_fn = path.join(list_dir, subset + ".phone.list")
+        if not path.isfile(phone_list_fn):
+            utils.filter_words(
+                phone_fa_fn, phone_list_fn, min_frames=5, min_chars=0
+                )
+        else:
+            print("Using existing file:", phone_list_fn)
+
+        # Filter phones
+        print("Reading:", phone_list_fn)
+        phone_segment_keys = []
+        with codecs.open(phone_list_fn, "r", "utf-8") as f:
+            for line in f:
+                phone_segment_keys.append(line.strip())
+        phone_filtered_keys = filter_segment_keys(
+            phone_segment_keys, n_max_tokens=5000
+            )
+        phone_filtered_list_fn = path.join(
+            list_dir, subset + ".filter1_phone.list"
+            )
+        print("Writing:", phone_filtered_list_fn)
+        if not path.isfile(phone_filtered_list_fn):
+            with codecs.open(phone_filtered_list_fn, "w", "utf-8") as f:
+                for segment_key in sorted(phone_filtered_keys):
+                    f.write(segment_key + "\n")
+        else:
+            print("Using existing file:", phone_filtered_list_fn)
+
+        # Extract phone segments from the MFCC NumPy archives
+        input_npz_fn = path.join(
+            "..", "features", feat_type, args.language, args.language.lower() +
+            "." + subset + ".npz"
+            )
+        output_npz_fn = path.join(
+            feat_dir, args.language.lower() + "." + subset +
+            ".filter1_phone.npz"
+            )
+        if not path.isfile(output_npz_fn):
+            utils.segments_from_npz(
+                input_npz_fn, phone_filtered_list_fn, output_npz_fn
+                )
+        else:
+            print("Using existing file:", output_npz_fn)
 
         if args.analyse:
             import matplotlib.pyplot as plt

@@ -83,7 +83,8 @@ def main():
     X = normed
 
     # Get a speaker colour map
-    cmap = plt.cm.jet
+    # cmap = plt.cm.jet
+    cmap = plt.cm.viridis
     cmaplist = [cmap(i) for i in range(cmap.N)]
     speakers_set = set(speakers)
     n_speakers = len(speakers_set)
