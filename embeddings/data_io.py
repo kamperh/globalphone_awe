@@ -183,7 +183,8 @@ def filter_data(data, labels, lengths, keys, speakers,
 def trunc_and_limit_dim(x, lengths, d_frame, max_length):
     for i, seq in enumerate(x):
         x[i] = x[i][:max_length, :d_frame]
-        lengths[i] = min(lengths[i], max_length)
+        if max_length is not None:
+            lengths[i] = min(lengths[i], max_length)
 
 
 def pad_sequences(x, n_padded, center_padded=True, return_mask=False):

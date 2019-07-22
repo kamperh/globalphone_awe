@@ -98,7 +98,7 @@ def main():
             cost_dict[key_query] = {}
         for i_search, key_search in enumerate(search_keys):
             cost_dict[key_query][key_search] = dtw_costs[i_query][i_search]
-    output_dir = path.join("exp", args.feature_label)
+    output_dir = path.join("exp", args.feature_label, "dtw")
     if not path.isdir(output_dir):
         os.makedirs(output_dir)
     fn = path.join(output_dir, "cost_dict.pkl")
