@@ -216,7 +216,7 @@ def apply_model(model_fn, language, subset, segtag):
                     [model["encoding"]], feed_dict={x: batch_x_padded,
                     x_lengths: batch_x_lengths}
                     )[0]
-                utt_key = utterances[i_batch]
+                utt_key = keys[i_batch]
                 seglist = seglists[i_batch]
                 embeddings = []
                 for i in range(cur_output.shape[0]):
