@@ -87,7 +87,7 @@ def main():
     duration = end_time - start_time
     print(datetime.now())
     print(
-        "Avg. duration per comparison: {:.3f} sec".format(duration *
+        "Avg. duration per comparison: {:.8f} sec".format(duration *
         args.n_cpus / (len(queries_list) * len(search_list)))
         )
 

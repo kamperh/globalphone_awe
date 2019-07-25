@@ -55,6 +55,10 @@ Combine the splits:
 
     ./combine_model_output.py exp/HA/5addd62282.min_20.max_60.step_3
 
+Remove split files:
+
+    rm exp/HA/*/search.?.npz
+
 Embed the queries:
 
     ../embeddings/apply_model_to_npz.py \
@@ -68,14 +72,26 @@ Apply normalisation:
 
 Calculate costs:
 
-    # Unnormalized
+    # Unnormalised
     ./get_dense_seg_costs.py exp/HA/5addd62282.min_20.max_60.step_3
     # MVN
     ./get_dense_seg_costs.py exp/HA/mvn.5addd62282.min_20.max_60.step_3
 
 Evaluate QbE performance:
 
-    ./eval_qbe.py \
+    # Unnormalised
+    ./eval_qbe.py HA \
+        exp/HA/5addd62282.min_20.max_60.step_3/cost_dict.cosine.pkl
+    # MVN
+    ./eval_qbe.py HA \
         exp/HA/mvn.5addd62282.min_20.max_60.step_3/cost_dict.cosine.pkl
 
+HA results with normalisation:
 
+    Avg. duration per comparison: 0.00061147 sec
+    ---------------------------------------------------------------------------
+    EER:  0.2354, avg: 0.2720, median: 0.2419, max: 0.4669, min: 0.1669
+    AUC:  0.8254, avg: 0.7879, median: 0.8284, max: 0.8813, min: 0.5541
+    P@10: 0.3745, avg: 0.3045, median: 0.3133, max: 0.5233, min: 0.0600
+    P@N:  0.3053, avg: 0.2515, median: 0.2618, max: 0.4180, min: 0.0528
+    ---------------------------------------------------------------------------
