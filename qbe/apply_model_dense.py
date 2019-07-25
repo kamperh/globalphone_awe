@@ -162,6 +162,7 @@ def apply_model(model_fn, language, subset, segtag):
         data_io.trunc_and_limit_dim(
             x_data, lengths, options_dict["n_input"], None
             )
+        print("x_data.shape", x_data.shape)
 
         class DenseBatchFeedIterator(object):
 
@@ -169,8 +170,10 @@ def apply_model(model_fn, language, subset, segtag):
                 self.input_sequences = input_sequences
                 self.n_input = self.input_sequences[0].shape[-1]
                 self.seglists = seglists
+                print("len(self.input_sequences)", len(self.input_sequences))
 
             def __iter__(self):
+                print("len(self.input_sequences)", len(self.input_sequences))
                 for i_utt in range(len(self.input_sequences)):
                     
                     # Get intervals
