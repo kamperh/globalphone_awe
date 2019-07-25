@@ -44,5 +44,9 @@ Embedding-based QbE
 Apply a CAE-RNN to the dense intervals for the different splits:
 
     ./apply_model_dense.py ../embeddings/models/HA.utd/train_cae_rnn/5addd62282/cae.best_val.ckpt HA search.0
+    ./apply_model_dense.py ../embeddings/models/HA.utd/train_cae_rnn/5addd62282/cae.best_val.ckpt HA search.1
 
+Combine the splits:
+
+    ./combine_model_output.py exp/HA/5addd62282.min_20.max_60.step_3
 

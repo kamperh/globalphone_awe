@@ -10,7 +10,7 @@ Date: 2017, 2019
 
 from os import path
 import argparse
-import cPickle as pickle
+import pickle
 import glob
 import numpy as np
 import sys
