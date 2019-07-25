@@ -63,6 +63,18 @@ Embed the queries:
 
 Apply normalisation:
 
-    ./dense_seg_mvn.py \
-        exp/dense_seg/332147c538.min_40.max_40.step_3.sigmoid_output_dict.dev/
+    ./dense_seg_mvn.py exp/HA/5addd62282.min_20.max_60.step_3
+
+Calculate costs:
+
+    # Unnormalized
+    ./get_dense_seg_costs.py exp/HA/5addd62282.min_20.max_60.step_3
+    # MVN
+    ./get_dense_seg_costs.py exp/HA/mvn.5addd62282.min_20.max_60.step_3
+
+Evaluate QbE performance:
+
+    ./eval_qbe.py \
+        exp/dense_seg/332147c538.min_40.max_40.step_3.sigmoid_output_dict.dev/cost_dict.cosine.pkl
+
 
