@@ -213,10 +213,13 @@ def apply_model(model_fn, language, subset, segtag):
             print("Applying model to segments")
             for i_batch, (batch_x_padded, batch_x_lengths) in \
                     enumerate(batch_iterator):
+                print("i_batch", i_batch)
+                print("batch_x_padded.shape", batch_x_padded.shape)
                 cur_output = session.run(
                     [model["encoding"]], feed_dict={x: batch_x_padded,
                     x_lengths: batch_x_lengths}
                     )[0]
+                print("cur_output.shape", cur_output.shape)
                 utt_key = keys[i_batch]
                 seglist = seglists[i_batch]
                 embeddings = []
