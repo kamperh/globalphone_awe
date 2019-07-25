@@ -81,6 +81,12 @@ Analyse different properties/aspects of the acoustic word embedding models by
 running the steps in [blackbox/readme.md](blackbox/readme.md)
 
 
+Query-by-example search
+-----------------------
+Perform query-by-example search experiments by running the steps in
+[qbe/readme.md](qbe/readme.md).
+
+
 Unit tests
 ----------
 In the root project directory, run `make test` to run unit tests.
