@@ -162,8 +162,6 @@ def apply_model(model_fn, language, subset, segtag):
         data_io.trunc_and_limit_dim(
             x_data, lengths, options_dict["n_input"], None
             )
-        print("len(x_data)", len(x_data))
-        print("x_data[0].shape", x_data[0].shape)
 
         class DenseBatchFeedIterator(object):
 
@@ -171,28 +169,20 @@ def apply_model(model_fn, language, subset, segtag):
                 self.input_sequences = input_sequences
                 self.n_input = self.input_sequences[0].shape[-1]
                 self.seglists = seglists
-                print("len(self.input_sequences)", len(self.input_sequences))
-                print("len(self.seglists)", len(self.seglists))
 
             def __iter__(self):
-                print("len(self.input_sequences)", len(self.input_sequences))
                 for i_utt in range(len(self.input_sequences)):
-                    print("i_utt", i_utt)
                     
                     # Get intervals
                     seglist = self.seglists[i_utt]
                     input_sequence = self.input_sequences[i_utt]
-                    print("len(seglist)", len(seglist))
-                    print("len(input_sequence)", len(input_sequence))
 
                     # Get segments for intervals
                     segments = []
                     for i, j in seglist:
                         segments.append(input_sequence[i:j, :])
-                    print("len(segments)", len(segments))
 
                     batch_x_lengths = [i.shape[0] for i in segments]
-                    print("len(batch_x_lengths)", len(batch_x_lengths))
 
                     # Pad to maximum length in batch
                     batch_x_padded = np.zeros(
@@ -219,17 +209,14 @@ def apply_model(model_fn, language, subset, segtag):
         embed_dict = {}
         with tf.Session() as session:
             saver.restore(session, model_fn)
-            print(datetime.now())
-            print("Applying model to segments")
+            # print(datetime.now())
+            print("Applying model to segments:")
             for i_batch, (batch_x_padded, batch_x_lengths) in \
                     tqdm(enumerate(batch_iterator)):
-                print("i_batch", i_batch)
-                print("batch_x_padded.shape", batch_x_padded.shape)
                 cur_output = session.run(
                     [model["encoding"]], feed_dict={x: batch_x_padded,
                     x_lengths: batch_x_lengths}
                     )[0]
-                print("cur_output.shape", cur_output.shape)
                 utt_key = keys[i_batch]
                 seglist = seglists[i_batch]
                 embeddings = []
@@ -237,7 +224,7 @@ def apply_model(model_fn, language, subset, segtag):
                     embeddings.append(cur_output[i, :])
                     n_outputs += 1
                 embed_dict[utt_key] = np.array(embeddings)
-            print(datetime.now())
+            # print(datetime.now())
 
             # for batch_x_padded, batch_x_lengths in batch_iterator:
             #     np_x = batch_x_padded
