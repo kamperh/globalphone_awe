@@ -209,9 +209,10 @@ def apply_model(model_fn, language, subset, segtag):
         embed_dict = {}
         with tf.Session() as session:
             saver.restore(session, model_fn)
-            print("Applying model to segments:")
+            print(datetime.now())
+            print("Applying model to segments")
             for i_batch, (batch_x_padded, batch_x_lengths) in \
-                    tqdm(enumerate(batch_iterator)):
+                    enumerate(batch_iterator):
                 cur_output = session.run(
                     [model["encoding"]], feed_dict={x: batch_x_padded,
                     x_lengths: batch_x_lengths}
@@ -223,7 +224,7 @@ def apply_model(model_fn, language, subset, segtag):
                     embeddings.append(cur_output[i, :])
                     n_outputs += 1
                 embed_dict[utt_key] = np.array(embeddings)
-
+            print(datetime.now())
 
             # for batch_x_padded, batch_x_lengths in batch_iterator:
             #     np_x = batch_x_padded

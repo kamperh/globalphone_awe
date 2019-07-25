@@ -23,7 +23,7 @@ DTW-based QbE
 -------------
 Get QbE costs and write these to file:
 
-    ./get_dtw_costs.py --n_cpus 4 HA
+    ./get_dtw_costs.py --n_cpus 29 HA
 
 Evaluate QbE performance:
 
@@ -31,6 +31,7 @@ Evaluate QbE performance:
 
 HA results:
 
+    Avg. duration per comparison: 0.057 sec
     ---------------------------------------------------------------------------
     EER:  0.2655, avg: 0.2918, median: 0.2783, max: 0.4505, min: 0.1844
     AUC:  0.8002, avg: 0.7724, median: 0.7960, max: 0.8766, min: 0.5752
@@ -75,6 +76,6 @@ Calculate costs:
 Evaluate QbE performance:
 
     ./eval_qbe.py \
-        exp/dense_seg/332147c538.min_40.max_40.step_3.sigmoid_output_dict.dev/cost_dict.cosine.pkl
+        exp/HA/mvn.5addd62282.min_20.max_60.step_3/cost_dict.cosine.pkl
 
 
