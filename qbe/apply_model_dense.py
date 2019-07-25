@@ -213,7 +213,7 @@ def apply_model(model_fn, language, subset, segtag):
         model = build_model(x, x_lengths, options_dict)
 
         # Embed data
-        batch_iterator = batching.SimpleIterator(x_data, len(x_data), False)
+        # batch_iterator = batching.SimpleIterator(x_data, len(x_data), False)
         saver = tf.train.Saver()
         n_outputs = 0
         embed_dict = {}
