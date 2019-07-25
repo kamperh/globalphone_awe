@@ -27,7 +27,7 @@ Get QbE costs and write these to file:
 
 Evaluate QbE performance:
 
-    ./eval_qbe.py HA exp/HA/cost_dict.pkl
+    ./eval_qbe.py HA exp/HA/dtw/cost_dict.pkl
 
 HA results:
 
@@ -53,4 +53,16 @@ Apply a CAE-RNN to the dense intervals for the different splits:
 Combine the splits:
 
     ./combine_model_output.py exp/HA/5addd62282.min_20.max_60.step_3
+
+Embed the queries:
+
+    ../embeddings/apply_model_to_npz.py \
+        ../embeddings/models/HA.utd/train_cae_rnn/5addd62282/cae.best_val.ckpt \
+        data/HA/queries.npz \
+        --output_npz_fn exp/HA/5addd62282.min_20.max_60.step_3/queries.npz
+
+Apply normalisation:
+
+    ./dense_seg_mvn.py \
+        exp/dense_seg/332147c538.min_40.max_40.step_3.sigmoid_output_dict.dev/
 
