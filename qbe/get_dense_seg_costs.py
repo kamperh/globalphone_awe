@@ -88,20 +88,19 @@ def main():
             )
     print("Reading:", fn)
     queries_dict = np.load(fn)
-    queries_keys = sorted(queries_dict.keys())
-    # queries_keys = queries_keys[:10]
+    queries_keys = sorted(list(queries_dict))
     queries_list = [queries_dict[i] for i in queries_keys]
     print("No. queries:", len(queries_list))
-    print("Query array shape:", queries_dict[queries_dict.keys()[0]].shape)
+    print("Query array shape:", queries_dict[list(queries_dict)[0]].shape)
 
     # Read search collection
     fn = path.join(args.eval_dir, "search.npz")
     print("Reading:", fn)
     search_dict = np.load(fn)
-    search_keys = sorted(search_dict.keys())
+    search_keys = sorted(list(search_dict))
     search_list = [search_dict[i] for i in search_keys]
     print("No. search utterances:", len(search_list))
-    print("Search array shape:", search_dict[search_dict.keys()[0]].shape)
+    print("Search array shape:", search_dict[list(search_dict)[0]].shape)
 
     # print(datetime.now())
 
