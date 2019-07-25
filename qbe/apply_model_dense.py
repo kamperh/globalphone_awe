@@ -172,21 +172,27 @@ def apply_model(model_fn, language, subset, segtag):
                 self.n_input = self.input_sequences[0].shape[-1]
                 self.seglists = seglists
                 print("len(self.input_sequences)", len(self.input_sequences))
+                print("len(self.seglists)", len(self.seglists))
 
             def __iter__(self):
                 print("len(self.input_sequences)", len(self.input_sequences))
                 for i_utt in range(len(self.input_sequences)):
+                    print("i_utt", i_utt)
                     
                     # Get intervals
                     seglist = self.seglists[i_utt]
                     input_sequence = self.input_sequences[i_utt]
+                    print("len(seglist)", len(seglist))
+                    print("len(input_sequence)", len(input_sequence))
 
                     # Get segments for intervals
                     segments = []
                     for i, j in seglist:
                         segments.append(input_sequence[i:j, :])
+                    print("len(segments)", len(segments))
 
                     batch_x_lengths = [i.shape[0] for i in segments]
+                    print("len(batch_x_lengths)", len(batch_x_lengths))
 
                     # Pad to maximum length in batch
                     batch_x_padded = np.zeros(
