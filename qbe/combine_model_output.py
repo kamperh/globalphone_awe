@@ -47,6 +47,7 @@ def main():
         for key in tqdm(split_features_dict):
             features_dict[key] = split_features_dict[key]
             # print(split_features_dict[key].shape)
+    print("No. segments:", len(features_dict))
 
     fn = path.join(args.exp_dir, "search.npz")
     print("Writing:", fn)

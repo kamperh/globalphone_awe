@@ -210,7 +210,10 @@ def apply_model(model_fn, language, subset, segtag):
         with tf.Session() as session:
             saver.restore(session, model_fn)
             # print(datetime.now())
-            print("Applying model to segments:")
+            print(
+                "Applying model to segments ({} iterations):".format(
+                len(x_data))
+                )
             for i_batch, (batch_x_padded, batch_x_lengths) in \
                     tqdm(enumerate(batch_iterator)):
                 cur_output = session.run(
@@ -235,7 +238,7 @@ def apply_model(model_fn, language, subset, segtag):
             #         )[0]
             #     break  # single batch
 
-    print("Processed {} inputs out of {}".format(n_outputs, n_intervals))
+    print("Processed {} out of {} inputs".format(n_outputs, n_intervals))
     
     return embed_dict
 
