@@ -162,7 +162,8 @@ def apply_model(model_fn, language, subset, segtag):
         data_io.trunc_and_limit_dim(
             x_data, lengths, options_dict["n_input"], None
             )
-        print("x_data.shape", x_data.shape)
+        print("len(x_data)", len(x_data))
+        print("x_data[0].shape", x_data[0].shape)
 
         class DenseBatchFeedIterator(object):
 
