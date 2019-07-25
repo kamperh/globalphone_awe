@@ -9,7 +9,7 @@ Date: 2017, 2019
 """
 
 from os import path
-from tdqm import tdqm
+from tqdm import tqdm
 import argparse
 import pickle
 import glob
@@ -44,7 +44,7 @@ def main():
     for fn in glob.glob(path.join(args.exp_dir, "search.*.npz")):
         print("Reading:", fn)
         split_features_dict = np.load(fn)
-        for key in tdqm(split_features_dict):
+        for key in tqdm(split_features_dict):
             features_dict[key] = split_features_dict[key]
             # print(split_features_dict[key].shape)
     print("No. segments:", len(features_dict))
