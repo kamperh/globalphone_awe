@@ -294,7 +294,7 @@ def main():
     output_dir = path.join("exp", args.language, model_key + "." + args.segtag)
     if not path.isdir(output_dir):
         os.makedirs(output_dir)
-    npz_fn = path.join(output_dir, "search.npz")
+    npz_fn = path.join(output_dir, args.subset + ".npz")
     print("Writing:", npz_fn)
     np.savez_compressed(npz_fn, **embed_dict)
     print(datetime.now())
