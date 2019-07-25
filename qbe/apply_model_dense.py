@@ -222,7 +222,7 @@ def apply_model(model_fn, language, subset, segtag):
             print(datetime.now())
             print("Applying model to segments")
             for i_batch, (batch_x_padded, batch_x_lengths) in \
-                    enumerate(batch_iterator):
+                    tqdm(enumerate(batch_iterator)):
                 print("i_batch", i_batch)
                 print("batch_x_padded.shape", batch_x_padded.shape)
                 cur_output = session.run(
