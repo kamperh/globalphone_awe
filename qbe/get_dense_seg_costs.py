@@ -13,7 +13,7 @@ from os import path
 from scipy.spatial.distance import cdist
 from tqdm import tqdm
 import argparse
-import cPickle as pickle
+import pickle
 import numpy as np
 import os
 import sys
