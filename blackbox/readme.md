@@ -3,6 +3,11 @@ Black-Box Analysis of Embedding Models
 
 Extract features for analysis
 -----------------------------
+While the default evaluation data (typically including a `gt_words` tag) are
+extracted with a minimum duration of 0.5 seconds at at least 5 characters, it
+is useful to do analysis on a larger range of word segments. This is done in
+the script below.
+
 Extract features and perform intermediate analysis:
 
     ./extract_analysis_features.py --analyse RU
