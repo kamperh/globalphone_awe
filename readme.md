@@ -27,6 +27,14 @@ Create and run Docker image
 ---------------------------
 *To-do*
 
+*Temporary:*
+
+    docker run --runtime=nvidia -it --rm -u $(id -u):$(id -g) -p 8887:8887 \
+        #-v /r2d2/backup/endgame/datasets/buckeye:/data/buckeye \
+        #-v /r2d2/backup/endgame/datasets/zrsc2015/xitsonga_wavs:/data/xitsonga_wavs \
+        -v "$(pwd)":/home \
+        py3_tf1.13
+
 
 If not using Docker: Install dependencies
 -----------------------------------------
@@ -79,10 +87,6 @@ Analyse embedding models
 ------------------------
 Analyse different properties/aspects of the acoustic word embedding models by
 running the steps in [blackbox/readme.md](blackbox/readme.md).
-
-While the default evaluation data (typically including a `gt_words` tag) are
-extracted with a minimum duration of 0.5 seconds at at least 5 characters, it
-is useful to do analysis on a larger range of word segments.
 
 
 Query-by-example search

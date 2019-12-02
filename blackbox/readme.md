@@ -15,7 +15,7 @@ Extract features and perform intermediate analysis:
 
 Process features with model
 ---------------------------
-The extracted features would typically be applied through a model.
+The extracted features would typically be passed through a model.
 
 For instance, to obtain downsampled embeddings, run:
 
