@@ -691,6 +691,11 @@ def check_argv():
         default=default_options_dict["flip_output"]
         )
     parser.add_argument(
+        "--d_language_embedding", type=int,
+        help="dimensionality of language embedding (default: %(default)s)",
+        default=default_options_dict["d_language_embedding"]
+        )
+    parser.add_argument(
         "--rnd_seed", type=int, help="random seed (default: %(default)s)",
         default=default_options_dict["rnd_seed"]
         )
