@@ -283,7 +283,8 @@ def train_rnn(options_dict):
     val_model_fn = intermediate_model_fn
     train_batch_iterator = batching.LabelledBucketIterator(
         train_x, train_y, options_dict["batch_size"],
-        n_buckets=options_dict["n_buckets"], shuffle_every_epoch=True
+        n_buckets=options_dict["n_buckets"], shuffle_every_epoch=True,
+        language_ids=
         )
     if options_dict["val_lang"] is None:
         record_dict = training.train_fixed_epochs(

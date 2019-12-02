@@ -46,7 +46,7 @@ default_options_dict = {
         "rnn_n_hiddens": [400, 400, 400],
         "ff_n_hiddens": [130],              # shared layers, the last one is
                                             # the embedding layer
-        "split_ff_n_hiddens": [400]         # separate feedforward layers
+        "split_ff_n_hiddens": [400],        # separate feedforward layers
         "learning_rate": 0.001,
         "rnn_keep_prob": 1.0,
         "ff_keep_prob": 1.0,
@@ -97,12 +97,13 @@ def build_rnn_from_options_dict(x, x_lengths, options_dict):
 
     # Split layers
     language_id = tf.placeholder(TF_ITYPE, [None])
+    network_dict["language_id"] = language_id
     split_networks = []
     for i_lang in range(options_dict["n_languages"]):
         with tf.variable_scope("split_ff_{}".format(i_lang)):
             split_ff = tflego.build_feedforward(
                 rnn, options_dict["split_ff_n_hiddens"] +
-                [options_dict["n_classes"]], 
+                [options_dict["n_types_per_lang"]], 
                 keep_prob=options_dict["ff_keep_prob"]
                 )
         split_networks.append(split_ff)
@@ -113,13 +114,9 @@ def build_rnn_from_options_dict(x, x_lengths, options_dict):
         if i_lang == len(split_networks) - 1:
             output = split_ff
         else:
-            output = tf.where(tf.equal(language, i), split_ff, output)
+            output = tf.where(tf.equal(language_id, i_lang), split_ff, output)
         i_lang -= 1
     network_dict["output"] = output
-
-    print(split_networks)
-    print(output)
-    assert False
 
     return network_dict
 
@@ -172,7 +169,7 @@ def train_rnn(options_dict):
                 cur_train_labels, cur_train_lengths, cur_train_keys,
                 cur_train_speakers,
                 n_min_tokens_per_type=options_dict["n_min_tokens_per_type"],
-                n_max_types=options_dict["n_max_types"],
+                n_max_types=options_dict["n_types_per_lang"],
                 n_max_tokens=options_dict["n_max_tokens"],
                 n_max_tokens_per_type=options_dict["n_max_tokens_per_type"],)
             train_x.extend(cur_train_x)
@@ -194,25 +191,10 @@ def train_rnn(options_dict):
             data_io.filter_data(train_x, train_labels, train_lengths,
             train_keys, train_speakers,
             n_min_tokens_per_type=options_dict["n_min_tokens_per_type"],
-            n_max_types=options_dict["n_max_types"],
+            n_max_types=options_dict["n_types_per_lang"],
             n_max_tokens=options_dict["n_max_tokens"],
             n_max_tokens_per_type=options_dict["n_max_tokens_per_type"],)
             )
-
-
-    assert False
-
-    # Convert training labels to integers
-    train_label_set = list(set(train_labels))
-    label_to_id = {}
-    for i, label in enumerate(sorted(train_label_set)):
-        label_to_id[label] = i
-    train_y = []
-    for label in train_labels:
-        train_y.append(label_to_id[label])
-    train_y = np.array(train_y, dtype=NP_ITYPE)
-    options_dict["n_classes"] = len(label_to_id)
-    print("Total no. classes:", options_dict["n_classes"])
 
     # Convert training languages to integers
     train_language_set = set(train_languages)
@@ -226,6 +208,26 @@ def train_rnn(options_dict):
         train_language_ids.append(language_to_id[lang])
     train_language_ids = np.array(train_language_ids, dtype=NP_ITYPE)
     options_dict["n_languages"] = len(language_to_id)
+
+    # Convert training labels to integers
+    per_language_labels = {}
+    per_language_label_to_id = {}
+    for lang in train_language_set:
+        per_language_labels[lang] = set()
+        per_language_label_to_id[lang] = {}
+    for label, lang in zip(train_labels, train_languages):
+        per_language_labels[lang].add(label)
+    for lang in per_language_labels:
+        label_set = list(set(per_language_labels[lang]))
+        label_to_id = {}
+        for i, label in enumerate(sorted(label_set)):
+            label_to_id[label] = i
+        per_language_label_to_id[lang] = label_to_id
+    train_y = []
+    for label, lang in zip(train_labels, train_languages):
+        train_y.append(per_language_label_to_id[lang][label])
+    train_y = np.array(train_y, dtype=NP_ITYPE)
+    print("Total no. classes:", options_dict["n_types_per_lang"])
 
     # Validation data
     if options_dict["val_lang"] is not None:
@@ -261,6 +263,7 @@ def train_rnn(options_dict):
     network_dict = build_rnn_from_options_dict(x, x_lengths, options_dict)
     encoding = network_dict["encoding"]
     output = network_dict["output"]
+    language_id = network_dict["language_id"]
 
     # Cross entropy loss
     loss = tf.reduce_mean(
@@ -329,18 +332,19 @@ def train_rnn(options_dict):
     val_model_fn = intermediate_model_fn
     train_batch_iterator = batching.LabelledBucketIterator(
         train_x, train_y, options_dict["batch_size"],
-        n_buckets=options_dict["n_buckets"], shuffle_every_epoch=True
+        n_buckets=options_dict["n_buckets"], shuffle_every_epoch=True,
+        language_ids=train_language_ids
         )
     if options_dict["val_lang"] is None:
         record_dict = training.train_fixed_epochs(
             options_dict["n_epochs"], optimizer, loss, train_batch_iterator,
-            [x, x_lengths, y],
+            [x, x_lengths, y, language_id],
             save_model_fn=intermediate_model_fn
             )
     else:
         record_dict = training.train_fixed_epochs_external_val(
             options_dict["n_epochs"], optimizer, loss, train_batch_iterator,
-            [x, x_lengths, y], samediff_val,
+            [x, x_lengths, y, language_id], samediff_val,
             save_model_fn=intermediate_model_fn,
             save_best_val_model_fn=model_fn,
             n_val_interval=options_dict["n_val_interval"]
@@ -411,9 +415,9 @@ def check_argv():
         default=default_options_dict["n_min_tokens_per_type"]
         )
     parser.add_argument(
-        "--n_max_types", type=int,
-        help="maximum number of types per language (default: %(default)s)",
-        default=default_options_dict["n_max_types"]
+        "--n_types_per_lang", type=int,
+        help="number of types per language (default: %(default)s)",
+        default=default_options_dict["n_types_per_lang"]
         )
     parser.add_argument(
         "--n_max_tokens", type=int,
@@ -467,7 +471,7 @@ def main():
     options_dict["val_lang"] = args.val_lang
     options_dict["n_epochs"] = args.n_epochs
     options_dict["n_min_tokens_per_type"] = args.n_min_tokens_per_type
-    options_dict["n_max_types"] = args.n_max_types
+    options_dict["n_types_per_lang"] = args.n_types_per_lang
     options_dict["n_max_tokens"] = args.n_max_tokens
     options_dict["n_max_tokens_per_type"] = args.n_max_tokens_per_type
     options_dict["batch_size"] = args.batch_size
