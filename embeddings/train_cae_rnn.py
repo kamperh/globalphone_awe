@@ -133,8 +133,9 @@ def build_cae_from_options_dict(a, a_lengths, b_lengths, options_dict):
         y_lengths=b_lengths, rnn_type=options_dict["rnn_type"],
         bidirectional=options_dict["bidirectional"],
         keep_prob=options_dict["keep_prob"],
-        add_conditioning_tensor=None if options_dict["d_language_embedding"] is
-        None else embedding_lookup
+        add_conditioning_tensor=None if ("d_language_embedding" not in
+        options_dict or options_dict["d_language_embedding"] is None) else
+        embedding_lookup
         # add_conditioning_tensor=None if options_dict["d_speaker_embedding"]
         # is None else embedding_lookup
         )
