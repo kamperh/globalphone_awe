@@ -271,7 +271,7 @@ def train_cae(options_dict):
     #     train_speaker_ids = np.array(train_speaker_ids, dtype=NP_ITYPE)
     #     options_dict["n_speakers"] = max(speaker_to_id.values()) + 1
 
-    # Convert training languages, if language embeddings
+    # Convert training languages to integers, if language embeddings
     if options_dict["d_language_embedding"] is not None:
         train_language_set = set(train_languages)
         language_to_id = {}
