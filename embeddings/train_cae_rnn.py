@@ -113,7 +113,8 @@ def build_cae_from_options_dict(a, a_lengths, b_lengths, options_dict):
     #             )
 
     # Language embedding
-    if options_dict["d_language_embedding"] is not None:
+    if ("d_language_embedding" in options_dict and
+            options_dict["d_language_embedding"] is not None):
         language_id = tf.placeholder(TF_ITYPE, [None])
         with tf.variable_scope("language_embedding"):
             language_embedding = tf.get_variable(
