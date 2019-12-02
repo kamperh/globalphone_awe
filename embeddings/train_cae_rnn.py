@@ -412,7 +412,8 @@ def train_cae(options_dict):
                 pretrain_x, [(i, i) for i in range(len(pretrain_x))],
                 options_dict["ae_batch_size"], options_dict["ae_n_buckets"],
                 shuffle_every_epoch=True, language_ids=None if
-                options_dict["d_language_embedding"] is None else
+                ("d_language_embedding" not in options_dict or
+                options_dict["d_language_embedding"] is None) else
                 train_language_ids, flip_output=options_dict["flip_output"]
                 )
     else:
@@ -427,10 +428,12 @@ def train_cae(options_dict):
                 train_x, [(i, i) for i in range(len(train_x))],
                 options_dict["ae_batch_size"], options_dict["ae_n_buckets"],
                 shuffle_every_epoch=True, language_ids=None if
-                options_dict["d_language_embedding"] is None else
+                ("d_language_embedding" not in options_dict or
+                options_dict["d_language_embedding"] is None) is None else
                 train_language_ids, flip_output=options_dict["flip_output"]
                 )
-    if options_dict["d_language_embedding"] is None:
+    if ("d_language_embedding" not in options_dict or
+            options_dict["d_language_embedding"] is None):
         if options_dict["val_lang"] is None:
             ae_record_dict = training.train_fixed_epochs(
                 options_dict["ae_n_epochs"], optimizer, loss,
@@ -479,10 +482,12 @@ def train_cae(options_dict):
         train_batch_iterator = batching.PairedBucketIterator(
             train_x, pair_list, batch_size=options_dict["cae_batch_size"],
             n_buckets=options_dict["cae_n_buckets"], shuffle_every_epoch=True,
-            language_ids=None if options_dict["d_language_embedding"] is None
-            else train_language_ids, flip_output=options_dict["flip_output"]
+            language_ids=None if ("d_language_embedding" not in options_dict or
+            options_dict["d_language_embedding"] is None) else
+            train_language_ids, flip_output=options_dict["flip_output"]
             )
-        if options_dict["d_language_embedding"] is None:
+        if ("d_language_embedding" not in options_dict or
+                options_dict["d_language_embedding"] is None):
             if options_dict["val_lang"] is None:
                 cae_record_dict = training.train_fixed_epochs(
                     options_dict["cae_n_epochs"], optimizer, loss,
