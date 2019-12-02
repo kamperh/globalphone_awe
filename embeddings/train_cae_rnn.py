@@ -364,7 +364,7 @@ def train_cae(options_dict):
 
     # Train AE
     val_model_fn = pretrain_intermediate_model_fn
-    print("options_dict[\"flip_output\"]:" options_dict["flip_output"])
+    print("options_dict[\"flip_output\"]:", options_dict["flip_output"])
     assert False
     if options_dict["pretrain_tag"] is not None:
         if options_dict["pretrain_tag"] == "rnd":
