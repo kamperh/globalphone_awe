@@ -67,7 +67,10 @@ default_options_dict = {
                                             # validation best)
         "ae_n_val_interval": 1,
         "cae_n_val_interval": 1,
-        "d_speaker_embedding": None,        # if None, no speaker information
+        # "d_speaker_embedding": None,      # if None, no speaker information
+        #                                   # is used, otherwise this is the
+        #                                   # embedding dimensionality
+        "d_language_embedding": None,       # if None, no language information
                                             # is used, otherwise this is the
                                             # embedding dimensionality
         "n_max_pairs": None,
@@ -95,17 +98,31 @@ def build_cae_from_options_dict(a, a_lengths, b_lengths, options_dict):
         "activation": tf.nn.relu
         }
 
-    # Speaker embedding
-    if options_dict["d_speaker_embedding"] is not None:
-        speaker_id = tf.placeholder(TF_ITYPE, [None])
-        with tf.variable_scope("speaker_embedding"):
-            speaker_embedding = tf.get_variable(
-                    "E", [options_dict["n_speakers"],
-                    options_dict["d_speaker_embedding"]], dtype=TF_DTYPE,
+    # # Speaker embedding
+    # if options_dict["d_speaker_embedding"] is not None:
+    #     assert False, "untested"
+    #     speaker_id = tf.placeholder(TF_ITYPE, [None])
+    #     with tf.variable_scope("speaker_embedding"):
+    #         speaker_embedding = tf.get_variable(
+    #                 "E", [options_dict["n_speakers"],
+    #                 options_dict["d_speaker_embedding"]], dtype=TF_DTYPE,
+    #                 initializer=tf.contrib.layers.xavier_initializer()
+    #                 )
+    #         embedding_lookup = tf.nn.embedding_lookup(
+    #             speaker_embedding, speaker_id
+    #             )
+
+    # Language embedding
+    if options_dict["d_language_embedding"] is not None:
+        language_id = tf.placeholder(TF_ITYPE, [None])
+        with tf.variable_scope("language_embedding"):
+            language_embedding = tf.get_variable(
+                    "E_lang", [options_dict["n_languages"],
+                    options_dict["d_language_embedding"]], dtype=TF_DTYPE,
                     initializer=tf.contrib.layers.xavier_initializer()
                     )
             embedding_lookup = tf.nn.embedding_lookup(
-                speaker_embedding, speaker_id
+                language_embedding, language_id
                 )
 
     # Network
@@ -115,8 +132,10 @@ def build_cae_from_options_dict(a, a_lengths, b_lengths, options_dict):
         y_lengths=b_lengths, rnn_type=options_dict["rnn_type"],
         bidirectional=options_dict["bidirectional"],
         keep_prob=options_dict["keep_prob"],
-        add_conditioning_tensor=None if options_dict["d_speaker_embedding"] is
+        add_conditioning_tensor=None if options_dict["d_language_embedding"] is
         None else embedding_lookup
+        # add_conditioning_tensor=None if options_dict["d_speaker_embedding"]
+        # is None else embedding_lookup
         )
 
     encoder_states = network_dict["encoder_states"]
@@ -126,10 +145,10 @@ def build_cae_from_options_dict(a, a_lengths, b_lengths, options_dict):
     mask = network_dict["mask"]
     y *= tf.expand_dims(mask, -1)  # safety
 
-    if options_dict["d_speaker_embedding"] is not None:
+    if options_dict["d_language_embedding"] is not None:
         return {
-            "z": z, "y": y, "mask": mask, "speaker_id": speaker_id,
-            "speaker_embedding": speaker_embedding
+            "z": z, "y": y, "mask": mask, "language_id": language_id,
+            "language_embedding": language_embedding
             }
     else:
         return {"z": z, "y": y, "mask": mask}
@@ -178,6 +197,7 @@ def train_cae(options_dict):
         train_lengths = []
         train_keys = []
         train_speakers = []
+        train_languages = []
         for cur_lang in train_languages:
             cur_npz_fn = path.join(
                 "data", cur_lang, "train." + train_tag + ".npz"
@@ -198,6 +218,7 @@ def train_cae(options_dict):
             train_lengths.extend(cur_train_lengths)
             train_keys.extend(cur_train_keys)
             train_speakers.extend(cur_train_speakers)
+            train_languages.extend([cur_lang]*len(cur_train_speakers))
         print("Total no. items:", len(train_labels))
     else:
         npz_fn = path.join(
@@ -236,20 +257,34 @@ def train_cae(options_dict):
             data_io.load_data_from_npz(npz_fn)
             )
 
-    # Convert training speakers, if speaker embeddings
-    # To-do: Untested
-    if options_dict["d_speaker_embedding"] is not None:
-        train_speaker_set = set(train_speakers)
-        speaker_to_id = {}
-        id_to_speaker = {}
-        for i, speaker in enumerate(sorted(list(train_speaker_set))):
-            speaker_to_id[speaker] = i
-            id_to_speaker[i] = speaker
-        train_speaker_ids = []
-        for speaker in train_speakers:
-            train_speaker_ids.append(speaker_to_id[speaker])
-        train_speaker_ids = np.array(train_speaker_ids, dtype=NP_ITYPE)
-        options_dict["n_speakers"] = max(speaker_to_id.values()) + 1
+    # # Convert training speakers, if speaker embeddings
+    # # To-do: Untested
+    # if options_dict["d_speaker_embedding"] is not None:
+    #     train_speaker_set = set(train_speakers)
+    #     speaker_to_id = {}
+    #     id_to_speaker = {}
+    #     for i, speaker in enumerate(sorted(list(train_speaker_set))):
+    #         speaker_to_id[speaker] = i
+    #         id_to_speaker[i] = speaker
+    #     train_speaker_ids = []
+    #     for speaker in train_speakers:
+    #         train_speaker_ids.append(speaker_to_id[speaker])
+    #     train_speaker_ids = np.array(train_speaker_ids, dtype=NP_ITYPE)
+    #     options_dict["n_speakers"] = max(speaker_to_id.values()) + 1
+
+    # Convert training languages, if language embeddings
+    if options_dict["d_language_embedding"] is not None:
+        train_language_set = set(train_languages)
+        language_to_id = {}
+        id_to_lang = {}
+        for i, lang in enumerate(sorted(list(train_language_set))):
+            language_to_id[lang] = i
+            id_to_lang[i] = lang
+        train_language_ids = []
+        for lang in train_languages:
+            train_language_ids.append(language_to_id[lang])
+        train_language_ids = np.array(train_language_ids, dtype=NP_ITYPE)
+        options_dict["n_languages"] = max(language_to_id.values()) + 1
 
     # Truncate and limit dimensionality
     max_length = options_dict["max_length"]
@@ -295,8 +330,10 @@ def train_cae(options_dict):
     mask = network_dict["mask"]
     z = network_dict["z"]
     y = network_dict["y"]
-    if options_dict["d_speaker_embedding"] is not None:
-        speaker_id = network_dict["speaker_id"]
+    # if options_dict["d_speaker_embedding"] is not None:
+    #     speaker_id = network_dict["speaker_id"]
+    if options_dict["d_language_embedding"] is not None:
+        language_id = network_dict["language_id"]
 
     # Reconstruction loss
     loss = tf.reduce_mean(
@@ -375,9 +412,9 @@ def train_cae(options_dict):
             train_batch_iterator = batching.PairedBucketIterator(
                 pretrain_x, [(i, i) for i in range(len(pretrain_x))],
                 options_dict["ae_batch_size"], options_dict["ae_n_buckets"],
-                shuffle_every_epoch=True, speaker_ids=None if
-                options_dict["d_speaker_embedding"] is None else
-                train_speaker_ids, flip_output=options_dict["flip_output"]
+                shuffle_every_epoch=True, language_ids=None if
+                options_dict["d_language_embedding"] is None else
+                train_language_ids, flip_output=options_dict["flip_output"]
                 )
     else:
         if options_dict["train_tag"] == "rnd":
@@ -390,11 +427,11 @@ def train_cae(options_dict):
             train_batch_iterator = batching.PairedBucketIterator(
                 train_x, [(i, i) for i in range(len(train_x))],
                 options_dict["ae_batch_size"], options_dict["ae_n_buckets"],
-                shuffle_every_epoch=True, speaker_ids=None if
-                options_dict["d_speaker_embedding"] is None else
-                train_speaker_ids, flip_output=options_dict["flip_output"]
+                shuffle_every_epoch=True, language_ids=None if
+                options_dict["d_language_embedding"] is None else
+                train_language_ids, flip_output=options_dict["flip_output"]
                 )
-    if options_dict["d_speaker_embedding"] is None:
+    if options_dict["d_language_embedding"] is None:
         if options_dict["val_lang"] is None:
             ae_record_dict = training.train_fixed_epochs(
                 options_dict["ae_n_epochs"], optimizer, loss,
@@ -413,13 +450,13 @@ def train_cae(options_dict):
         if options_dict["val_lang"] is None:
             ae_record_dict = training.train_fixed_epochs(
                 options_dict["ae_n_epochs"], optimizer, loss,
-                train_batch_iterator, [a, a_lengths, b, b_lengths, speaker_id],
+                train_batch_iterator, [a, a_lengths, b, b_lengths, language_id],
                 save_model_fn=pretrain_intermediate_model_fn
                 )
         else:
             ae_record_dict = training.train_fixed_epochs_external_val(
                 options_dict["ae_n_epochs"], optimizer, loss,
-                train_batch_iterator, [a, a_lengths, b, b_lengths, speaker_id],
+                train_batch_iterator, [a, a_lengths, b, b_lengths, language_id],
                 samediff_val, save_model_fn=pretrain_intermediate_model_fn,
                 save_best_val_model_fn=pretrain_model_fn,
                 n_val_interval=options_dict["ae_n_val_interval"]
@@ -443,10 +480,10 @@ def train_cae(options_dict):
         train_batch_iterator = batching.PairedBucketIterator(
             train_x, pair_list, batch_size=options_dict["cae_batch_size"],
             n_buckets=options_dict["cae_n_buckets"], shuffle_every_epoch=True,
-            speaker_ids=None if options_dict["d_speaker_embedding"] is None
-            else train_speaker_ids, flip_output=options_dict["flip_output"]
+            language_ids=None if options_dict["d_language_embedding"] is None
+            else train_language_ids, flip_output=options_dict["flip_output"]
             )
-        if options_dict["d_speaker_embedding"] is None:
+        if options_dict["d_language_embedding"] is None:
             if options_dict["val_lang"] is None:
                 cae_record_dict = training.train_fixed_epochs(
                     options_dict["cae_n_epochs"], optimizer, loss,
@@ -468,7 +505,7 @@ def train_cae(options_dict):
                 cae_record_dict = training.train_fixed_epochs(
                     options_dict["cae_n_epochs"], optimizer, loss,
                     train_batch_iterator, [a, a_lengths, b, b_lengths,
-                    speaker_id], samediff_val,
+                    language_id], samediff_val,
                     save_model_fn=intermediate_model_fn,
                     load_model_fn=cae_pretrain_model_fn
                     )
@@ -476,7 +513,7 @@ def train_cae(options_dict):
                 cae_record_dict = training.train_fixed_epochs_external_val(
                     options_dict["cae_n_epochs"], optimizer, loss,
                     train_batch_iterator, [a, a_lengths, b, b_lengths,
-                    speaker_id], samediff_val,
+                    language_id], samediff_val,
                     save_model_fn=intermediate_model_fn,
                     save_best_val_model_fn=model_fn,
                     n_val_interval=options_dict["cae_n_val_interval"],
