@@ -115,7 +115,7 @@ class PairedBucketIterator(object):
     """Iterator over bucketed pairs of sequences."""
     
     def __init__(self, x_list, pair_list, batch_size, n_buckets,
-            shuffle_every_epoch=False, speaker_ids=None):
+            shuffle_every_epoch=False, speaker_ids=None, flip_output=False):
 
         # Attributes
         self.x_list = x_list
@@ -123,6 +123,7 @@ class PairedBucketIterator(object):
         self.batch_size = batch_size
         self.shuffle_every_epoch = shuffle_every_epoch
         self.speaker_ids = speaker_ids
+        self.flip_output = flip_output
 
         self.n_input = self.x_list[0].shape[-1]
         self.x_lengths = np.array([i.shape[0] for i in x_list])
@@ -184,7 +185,10 @@ class PairedBucketIterator(object):
                 batch_padded_a[i, :length, :] = seq
             for i, length in enumerate(batch_lengths_b):
                 seq = self.x_list[batch_indices_b[i]]
-                batch_padded_b[i, :length, :] = seq
+                if self.flip_output:
+                    batch_padded_b[i, :length, :] = seq[::-1]
+                else:
+                    batch_padded_b[i, :length, :] = seq
             
             if self.speaker_ids is None:
                 yield (

@@ -75,6 +75,7 @@ default_options_dict = {
         "n_max_types": None,
         "n_max_tokens": None,
         "n_max_tokens_per_type": None,
+        "flip_output": False,
         "rnd_seed": 1,
     }
 
@@ -363,6 +364,8 @@ def train_cae(options_dict):
 
     # Train AE
     val_model_fn = pretrain_intermediate_model_fn
+    print("options_dict[\"flip_output\"]:" options_dict["flip_output"])
+    assert False
     if options_dict["pretrain_tag"] is not None:
         if options_dict["pretrain_tag"] == "rnd":
             train_batch_iterator = batching.RandomSegmentsIterator(
@@ -376,7 +379,7 @@ def train_cae(options_dict):
                 options_dict["ae_batch_size"], options_dict["ae_n_buckets"],
                 shuffle_every_epoch=True, speaker_ids=None if
                 options_dict["d_speaker_embedding"] is None else
-                train_speaker_ids
+                train_speaker_ids, flip_output=options_dict["flip_output"]
                 )
     else:
         if options_dict["train_tag"] == "rnd":
@@ -391,7 +394,7 @@ def train_cae(options_dict):
                 options_dict["ae_batch_size"], options_dict["ae_n_buckets"],
                 shuffle_every_epoch=True, speaker_ids=None if
                 options_dict["d_speaker_embedding"] is None else
-                train_speaker_ids
+                train_speaker_ids, flip_output=options_dict["flip_output"]
                 )
     if options_dict["d_speaker_embedding"] is None:
         if options_dict["val_lang"] is None:
@@ -443,7 +446,7 @@ def train_cae(options_dict):
             train_x, pair_list, batch_size=options_dict["cae_batch_size"],
             n_buckets=options_dict["cae_n_buckets"], shuffle_every_epoch=True,
             speaker_ids=None if options_dict["d_speaker_embedding"] is None
-            else train_speaker_ids
+            else train_speaker_ids, flip_output=options_dict["flip_output"]
             )
         if options_dict["d_speaker_embedding"] is None:
             if options_dict["val_lang"] is None:
@@ -648,6 +651,11 @@ def check_argv():
         default=default_options_dict["extrinsic_usefinal"]
         )
     parser.add_argument(
+        "--flip_outut", action="store_true",
+        help="flip the order of the RNN output (default: %(default)s)",
+        default=default_options_dict["flip_outut"]
+        )
+    parser.add_argument(
         "--rnd_seed", type=int, help="random seed (default: %(default)s)",
         default=default_options_dict["rnd_seed"]
         )
@@ -686,6 +694,7 @@ def main():
     options_dict["extrinsic_usefinal"] = args.extrinsic_usefinal
     options_dict["train_tag"] = args.train_tag
     options_dict["pretrain_tag"] = args.pretrain_tag
+    options_dict["flip_output"] = args.flip_output
     options_dict["rnd_seed"] = args.rnd_seed
     if args.n_hiddens is not None and args.enc_n_layers is not None:
         options_dict["enc_n_hiddens"] = [1]*args.enc_n_layers
