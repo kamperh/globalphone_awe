@@ -466,7 +466,7 @@ def main():
 
     # Set options
     options_dict = default_options_dict.copy()
-    options_dict["script"] = "train_rnn"
+    options_dict["script"] = "train_rnn_split"
     options_dict["train_lang"] = args.train_lang
     options_dict["val_lang"] = args.val_lang
     options_dict["n_epochs"] = args.n_epochs
