@@ -334,6 +334,8 @@ def train_cae(options_dict):
     #     speaker_id = network_dict["speaker_id"]
     if options_dict["d_language_embedding"] is not None:
         language_id = network_dict["language_id"]
+        print(language_id)
+        assert False
 
     # Reconstruction loss
     loss = tf.reduce_mean(
