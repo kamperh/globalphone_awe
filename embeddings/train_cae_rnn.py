@@ -651,9 +651,9 @@ def check_argv():
         default=default_options_dict["extrinsic_usefinal"]
         )
     parser.add_argument(
-        "--flip_outut", action="store_true",
+        "--flip_output", action="store_true",
         help="flip the order of the RNN output (default: %(default)s)",
-        default=default_options_dict["flip_outut"]
+        default=default_options_dict["flip_output"]
         )
     parser.add_argument(
         "--rnd_seed", type=int, help="random seed (default: %(default)s)",
