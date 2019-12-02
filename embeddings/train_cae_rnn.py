@@ -735,6 +735,7 @@ def main():
     options_dict["extrinsic_usefinal"] = args.extrinsic_usefinal
     options_dict["train_tag"] = args.train_tag
     options_dict["pretrain_tag"] = args.pretrain_tag
+    options_dict["d_language_embedding"] = args.d_language_embedding
     options_dict["flip_output"] = args.flip_output
     options_dict["rnd_seed"] = args.rnd_seed
     if args.n_hiddens is not None and args.enc_n_layers is not None:
