@@ -191,14 +191,13 @@ def train_cae(options_dict):
         min_length = options_dict["min_length"]
         train_tag = "all"
     if "+" in options_dict["train_lang"]:
-        train_languages = options_dict["train_lang"].split("+")
         train_x = []
         train_labels = []
         train_lengths = []
         train_keys = []
         train_speakers = []
         train_languages = []
-        for cur_lang in train_languages:
+        for cur_lang in options_dict["train_lang"].split("+"):
             cur_npz_fn = path.join(
                 "data", cur_lang, "train." + train_tag + ".npz"
                 )
