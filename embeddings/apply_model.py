@@ -63,6 +63,12 @@ def build_model(x, x_lengths, options_dict):
             x, x_lengths, options_dict
             )
         model_dict["encoding"] = rnn["encoding"]
+    elif options_dict["script"] == "train_rnn_split":
+        import train_rnn_split
+        rnn = train_rnn_split.build_rnn_from_options_dict(
+            x, x_lengths, options_dict
+            )
+        model_dict["encoding"] = rnn["encoding"]
     else:
         assert False, "model type not supported"
     return model_dict
