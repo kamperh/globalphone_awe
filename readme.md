@@ -27,6 +27,14 @@ Create and run Docker image
 ---------------------------
 *To-do*
 
+*Temporary:*
+
+    docker run --runtime=nvidia -it --rm -u $(id -u):$(id -g) -p 8887:8887 \
+        #-v /r2d2/backup/endgame/datasets/buckeye:/data/buckeye \
+        #-v /r2d2/backup/endgame/datasets/zrsc2015/xitsonga_wavs:/data/xitsonga_wavs \
+        -v "$(pwd)":/home \
+        py3_tf1.13
+
 
 If not using Docker: Install dependencies
 -----------------------------------------
@@ -73,6 +81,18 @@ Train neural acoustic word embeddings
 -------------------------------------
 Train and evaluate neural network acoustic word embedding models by running the
 steps in [embeddings/readme.md](embeddings/readme.md).
+
+
+Analyse embedding models
+------------------------
+Analyse different properties/aspects of the acoustic word embedding models by
+running the steps in [blackbox/readme.md](blackbox/readme.md).
+
+
+Query-by-example search
+-----------------------
+Perform query-by-example search experiments by running the steps in
+[qbe/readme.md](qbe/readme.md).
 
 
 Unit tests

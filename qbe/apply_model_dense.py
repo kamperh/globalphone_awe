@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 """
-Encode the set using the specified model.
+Apply a model to dense segmentationi intervals.
 
 Author: Herman Kamper
 Contact: kamperh@gmail.com
@@ -10,6 +10,7 @@ Date: 2018, 2019
 
 from datetime import datetime
 from os import path
+from tqdm import tqdm
 import argparse
 import pickle
 import numpy as np
@@ -18,8 +19,9 @@ import sys
 import tensorflow as tf
 
 sys.path.append(path.join("..", "src"))
+sys.path.append(path.join("..", "embeddings"))
 
-from link_mfcc import sixteen_languages
+from apply_model import build_model
 from tflego import NP_DTYPE, TF_DTYPE, NP_ITYPE, TF_ITYPE
 import batching
 import data_io
@@ -29,6 +31,7 @@ import data_io
 #                            APPLY MODEL FUNCTIONS                            #
 #-----------------------------------------------------------------------------#
 
+"""
 def build_model(x, x_lengths, options_dict):
     model_dict = {}
     if options_dict["script"] == "train_cae_rnn":
@@ -63,20 +66,13 @@ def build_model(x, x_lengths, options_dict):
             x, x_lengths, options_dict
             )
         model_dict["encoding"] = rnn["encoding"]
-    elif options_dict["script"] == "train_rnn_split":
-        import train_rnn_split
-        rnn = train_rnn_split.build_rnn_from_options_dict(
-            x, x_lengths, options_dict
-            )
-        model_dict["encoding"] = rnn["encoding"]
     else:
         assert False, "model type not supported"
     return model_dict
+"""
 
 
-def apply_model(model_fn, subset, language):
-
-    # assert language is None  # to-do
+def apply_model(model_fn, language, subset, segtag):
 
     # Load the model options
     model_dir = path.split(model_fn)[0]
@@ -85,13 +81,57 @@ def apply_model(model_fn, subset, language):
     with open(options_dict_fn, "rb") as f:
         options_dict = pickle.load(f)
 
-    # Load data
+    # Load data and intervals
     npz_fn = path.join("data", language, subset + ".npz")
     x_data, labels, lengths, keys, speakers = data_io.load_data_from_npz(
         npz_fn
         )
+    seglist_fn = path.join(
+        "data", language, "search.seglist." + segtag + ".pkl"
+        )
+    print("Reading:", seglist_fn)
+    with open(seglist_fn, "rb") as f:
+        seglist_dict = pickle.load(f)
+    seglists = [seglist_dict[i] for i in keys]
+    print("No. utterances:", len(x_data))
+    n_intervals = sum([len(i) for i in seglists])
+    print("No. intervals:", n_intervals)
+
+    # assert False
+    # print("Reading:", input_npz_fn)
+    # features_dict = np.load(input_npz_fn)
+    # seglist_fn = path.join(
+    #     "data", language, "search.seglist." + segtag + ".pkl"
+    #     )
+    # print("Reading:", seglist_fn)
+    # with open(seglist_fn, "rb") as f:
+    #     seglist_dict = pickle.load(f)
+    # utterances = sorted(features_dict.keys())
+    # input_sequences = [features_dict[i] for i in utterances]
+    # seglists = [seglist_dict[i] for i in utterances]
+    # print("No. utterances:", len(input_sequences))
+    # n_intervals = sum([len(i) for i in seglists])
+    # print("No. intervals:", n_intervals)
+
+    # if "cnn" in options_dict["script"]:
+    #     assert False, "to-do"
+    # else:  # rnn
+
+    # print("No. utterances:", len(input_sequences))
+    # n_intervals = sum([len(i) for i in seglists])
+    # print("No. intervals:", n_intervals)
+
+
+    # # Load data
+    # npz_fn = path.join("data", language, subset + ".npz")
+    # x_data, labels, lengths, keys, speakers = data_io.load_data_from_npz(
+    #     npz_fn
+    #     )
+
 
     if "cnn" in options_dict["script"]:
+
+        assert False, "to-do"
 
         # Pad and flatten data
         x_data, _ = data_io.pad_sequences(
@@ -120,9 +160,42 @@ def apply_model(model_fn, subset, language):
         
         # Truncate and limit dimensionality
         data_io.trunc_and_limit_dim(
-            x_data, lengths, options_dict["n_input"],
-            options_dict["max_length"]
+            x_data, lengths, options_dict["n_input"], None
             )
+
+        class DenseBatchFeedIterator(object):
+
+            def __init__(self, input_sequences, seglists):
+                self.input_sequences = input_sequences
+                self.n_input = self.input_sequences[0].shape[-1]
+                self.seglists = seglists
+
+            def __iter__(self):
+                for i_utt in range(len(self.input_sequences)):
+                    
+                    # Get intervals
+                    seglist = self.seglists[i_utt]
+                    input_sequence = self.input_sequences[i_utt]
+
+                    # Get segments for intervals
+                    segments = []
+                    for i, j in seglist:
+                        segments.append(input_sequence[i:j, :])
+
+                    batch_x_lengths = [i.shape[0] for i in segments]
+
+                    # Pad to maximum length in batch
+                    batch_x_padded = np.zeros(
+                        (len(batch_x_lengths), np.max(batch_x_lengths),
+                        self.n_input), dtype=NP_DTYPE
+                        )
+                    for i, length in enumerate(batch_x_lengths):
+                        seq = segments[i]
+                        batch_x_padded[i, :length, :] = seq
+
+                    yield (batch_x_padded, batch_x_lengths)
+
+        batch_iterator = DenseBatchFeedIterator(x_data, seglists)
 
         # Build model
         x = tf.placeholder(TF_DTYPE, [None, None, options_dict["n_input"]])
@@ -130,23 +203,43 @@ def apply_model(model_fn, subset, language):
         model = build_model(x, x_lengths, options_dict)
 
         # Embed data
-        batch_iterator = batching.SimpleIterator(x_data, len(x_data), False)
+        # batch_iterator = batching.SimpleIterator(x_data, len(x_data), False)
         saver = tf.train.Saver()
+        n_outputs = 0
+        embed_dict = {}
         with tf.Session() as session:
             saver.restore(session, model_fn)
-            for batch_x_padded, batch_x_lengths in batch_iterator:
-                np_x = batch_x_padded
-                np_x_lengths = batch_x_lengths
-                np_z = session.run(
-                    [model["encoding"]], feed_dict={x: np_x, x_lengths:
-                    np_x_lengths}
+            # print(datetime.now())
+            print(
+                "Applying model to segments ({} iterations):".format(
+                len(x_data))
+                )
+            for i_batch, (batch_x_padded, batch_x_lengths) in \
+                    tqdm(enumerate(batch_iterator)):
+                cur_output = session.run(
+                    [model["encoding"]], feed_dict={x: batch_x_padded,
+                    x_lengths: batch_x_lengths}
                     )[0]
-                break  # single batch
+                utt_key = keys[i_batch]
+                seglist = seglists[i_batch]
+                embeddings = []
+                for i in range(cur_output.shape[0]):
+                    embeddings.append(cur_output[i, :])
+                    n_outputs += 1
+                embed_dict[utt_key] = np.array(embeddings)
+            # print(datetime.now())
 
-    embed_dict = {}
-    for i, utt_key in enumerate([keys[i] for i in batch_iterator.indices]):
-        embed_dict[utt_key] = np_z[i]
+            # for batch_x_padded, batch_x_lengths in batch_iterator:
+            #     np_x = batch_x_padded
+            #     np_x_lengths = batch_x_lengths
+            #     np_z = session.run(
+            #         [model["encoding"]], feed_dict={x: np_x, x_lengths:
+            #         np_x_lengths}
+            #         )[0]
+            #     break  # single batch
 
+    print("Processed {} out of {} inputs".format(n_outputs, n_intervals))
+    
     return embed_dict
 
 
@@ -161,12 +254,17 @@ def check_argv():
         )
     parser.add_argument("model_fn", type=str, help="model checkpoint filename")
     parser.add_argument(
-        "language", type=str, help="language to apply model to",
-        choices=sixteen_languages
+        "language", type=str, help="GlobalPhone language",
+        choices=["HA"]
         )
     parser.add_argument(
         "subset", type=str, help="subset to apply model to",
-        choices=["val", "test"]
+        choices=["search.0", "search.1", "search.test"]
+        )
+    parser.add_argument(
+        "--segtag", type=str,
+        help="a tag to identify the dense segments lists "
+        "(default: %(default)s)", default="min_20.max_60.step_3"
         )
     if len(sys.argv) == 1:
         parser.print_help()
@@ -190,15 +288,17 @@ def main():
         tf.contrib._warning = None
 
     # Embed data
-    embed_dict = apply_model(args.model_fn, args.subset, args.language)
+    embed_dict = apply_model(
+        args.model_fn, args.language, args.subset, args.segtag
+        )
 
     # Save embeddings
     model_dir, model_fn = path.split(args.model_fn)
-    if args.language is None:
-        npz_fn =  args.subset + ".npz"
-    else:
-        npz_fn = args.language + "." + args.subset + ".npz"
-    npz_fn = path.join(model_dir, path.splitext(model_fn)[0] + "." + npz_fn)
+    model_key = path.split(path.normpath(model_dir))[1]
+    output_dir = path.join("exp", args.language, model_key + "." + args.segtag)
+    if not path.isdir(output_dir):
+        os.makedirs(output_dir)
+    npz_fn = path.join(output_dir, args.subset + ".npz")
     print("Writing:", npz_fn)
     np.savez_compressed(npz_fn, **embed_dict)
     print(datetime.now())

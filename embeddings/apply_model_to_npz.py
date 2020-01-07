@@ -115,6 +115,11 @@ def check_argv():
         )
     parser.add_argument("model_fn", type=str, help="model checkpoint filename")
     parser.add_argument("npz_fn", type=str, help="the NumPy archive to encode")
+    parser.add_argument(
+        "--output_npz_fn", type=str,
+        help="if provided, the output is written to this NumPy archive "
+        "instead of the model directory"
+        )
     if len(sys.argv) == 1:
         parser.print_help()
         sys.exit(1)
@@ -141,10 +146,13 @@ def main():
 
     # Save embeddings
     model_dir, model_fn = path.split(args.model_fn)
-    npz_fn = path.join(
-        model_dir, path.splitext(model_fn)[0] + "." +
-        path.split(args.npz_fn)[-1]
-        )
+    if args.output_npz_fn is None:
+        npz_fn = path.join(
+            model_dir, path.splitext(model_fn)[0] + "." +
+            path.split(args.npz_fn)[-1]
+            )
+    else:
+        npz_fn = args.output_npz_fn
     print("Writing:", npz_fn)
     np.savez_compressed(npz_fn, **embed_dict)
     print(datetime.now())

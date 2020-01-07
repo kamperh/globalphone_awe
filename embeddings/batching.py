@@ -115,14 +115,15 @@ class PairedBucketIterator(object):
     """Iterator over bucketed pairs of sequences."""
     
     def __init__(self, x_list, pair_list, batch_size, n_buckets,
-            shuffle_every_epoch=False, speaker_ids=None):
+            shuffle_every_epoch=False, language_ids=None, flip_output=False):
 
         # Attributes
         self.x_list = x_list
         self.pair_list = pair_list
         self.batch_size = batch_size
         self.shuffle_every_epoch = shuffle_every_epoch
-        self.speaker_ids = speaker_ids
+        self.language_ids = language_ids
+        self.flip_output = flip_output
 
         self.n_input = self.x_list[0].shape[-1]
         self.x_lengths = np.array([i.shape[0] for i in x_list])
@@ -166,9 +167,9 @@ class PairedBucketIterator(object):
             batch_lengths_a = self.x_lengths[batch_indices_a]
             batch_lengths_b = self.x_lengths[batch_indices_b]
 
-            if self.speaker_ids is not None:
-                batch_speaker_a = self.speaker_ids[batch_indices_a]
-                batch_speaker_b = self.speaker_ids[batch_indices_b]
+            if self.language_ids is not None:
+                batch_language_a = self.language_ids[batch_indices_a]
+                batch_language_b = self.language_ids[batch_indices_b]
             
             n_pad = max(np.max(batch_lengths_a), np.max(batch_lengths_b))
             
@@ -184,9 +185,12 @@ class PairedBucketIterator(object):
                 batch_padded_a[i, :length, :] = seq
             for i, length in enumerate(batch_lengths_b):
                 seq = self.x_list[batch_indices_b[i]]
-                batch_padded_b[i, :length, :] = seq
+                if self.flip_output:
+                    batch_padded_b[i, :length, :] = seq[::-1]
+                else:
+                    batch_padded_b[i, :length, :] = seq
             
-            if self.speaker_ids is None:
+            if self.language_ids is None:
                 yield (
                     batch_padded_a, batch_lengths_a, batch_padded_b,
                     batch_lengths_b
@@ -194,7 +198,7 @@ class PairedBucketIterator(object):
             else:
                 yield (
                     batch_padded_a, batch_lengths_a, batch_padded_b,
-                    batch_lengths_b, batch_speaker_b
+                    batch_lengths_b, batch_language_b
                     )
 
 
@@ -278,7 +282,7 @@ class LabelledBucketIterator(object):
     """Iterator with labels and bucketing."""
     
     def __init__(self, x_list, y, batch_size, n_buckets,
-            shuffle_every_epoch=False):
+            shuffle_every_epoch=False, language_ids=None):
         self.x_list = x_list
         self.y = y
         self.batch_size = int(np.floor(batch_size*0.5))  # batching is done
@@ -287,6 +291,8 @@ class LabelledBucketIterator(object):
                                                          # given over items
                                                          # within pairs
         self.shuffle_every_epoch = shuffle_every_epoch
+        self.language_ids = language_ids
+
         self.n_input = self.x_list[0].shape[-1]
         self.x_lengths = np.array([i.shape[0] for i in x_list])
         self.pair_list = get_pair_list(y, both_directions=False)
@@ -327,9 +333,12 @@ class LabelledBucketIterator(object):
                 batch_pair_list])
                 )
             
+            if self.language_ids is not None:
+                batch_language = self.language_ids[batch_indices]
+
             batch_x_lengths = self.x_lengths[batch_indices]
             batch_y = self.y[batch_indices]
-            
+
             # Pad to maximum length in batch
             batch_x_padded = np.zeros(
                 (len(batch_indices), np.max(batch_x_lengths), self.n_input),
@@ -339,7 +348,12 @@ class LabelledBucketIterator(object):
                 seq = self.x_list[batch_indices[i]]
                 batch_x_padded[i, :length, :] = seq
 
-            yield (batch_x_padded, batch_x_lengths, batch_y)
+            if self.language_ids is None:
+                yield (batch_x_padded, batch_x_lengths, batch_y)
+            else:
+                yield (
+                    batch_x_padded, batch_x_lengths, batch_y, batch_language
+                    )
 
 
 class LabelledIterator(object):
