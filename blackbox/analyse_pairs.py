@@ -46,7 +46,7 @@ def check_argv():
     return parser.parse_args()
 
 
-def generate_editdistance_array(labels):
+def editdistance_array(labels):
     """
     Return an array of int in the same order as the distances from
     `scipy.spatial.distance.pdist` indicating the edit distance between all
@@ -191,8 +191,8 @@ def main():
 
         # Get distances
         print("Getting edit distances:")
-        # edit_distances = generate_editdistance_array(labels)
-        edit_distances = generate_editdistance_array(pron_labels)
+        # edit_distances = editdistance_array(labels)
+        edit_distances = editdistance_array(pron_labels)
 
         # Plot distances
         edits = sorted(set(edit_distances))

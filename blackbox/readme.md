@@ -27,7 +27,7 @@ For instance, to obtain downsampled embeddings, run:
         exp/GE/mfcc.dev.filter1_gt.downsample_10.npz
     cd -
 
-To obtain embeddings from a particular mode, run:
+To obtain embeddings from a particular model, run:
 
     cd ../embeddings
     ./apply_model_to_npz.py \
