@@ -167,6 +167,11 @@ def main():
             # gp_alignments_dir, args.language, subset + ".phone.ctm"
             gp_alignments_dir, args.language, subset + ".phone.ipa.ctm"
             )
+        if not path.isfile(phone_fa_fn):
+            print("Warning: IPA pronunciations not found")
+            phone_fa_fn = path.join(
+                gp_alignments_dir, args.language, subset + ".phone.ctm"
+                )            
         pronunciations_dict = pronunciations_from_fa(
             word_fa_fn, phone_fa_fn
             )
