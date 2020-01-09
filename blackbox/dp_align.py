@@ -104,7 +104,7 @@ def dp_align(ref_list, test_list, ins_penalty=3, del_penalty=3, sub_penalty=4):
         for j in range(len(ref_list) + 1):
             dp_matrix[i][j] = DPEntry()
 
-    # Initialise the originf
+    # Initialise the origin
     dp_matrix[0][0].score = 0
     dp_matrix[0][0].align = "m"
 
