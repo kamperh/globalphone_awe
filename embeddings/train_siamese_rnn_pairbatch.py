@@ -58,6 +58,8 @@ default_options_dict = {
                                             # validation best)
         "n_val_interval": 1,
         "n_max_pairs": None,
+        "n_min_tokens_per_type": None,      # if None, no filter is applied
+        "n_max_types": None,
         "rnd_seed": 1,
     }
 
@@ -233,6 +235,13 @@ def train_siamese(options_dict):
             (cur_train_x, cur_train_labels, cur_train_lengths, cur_train_keys,
                 cur_train_speakers) = data_io.load_data_from_npz(cur_npz_fn,
                 None)
+            (cur_train_x, cur_train_labels, cur_train_lengths, cur_train_keys,
+                cur_train_speakers) = data_io.filter_data(cur_train_x,
+                cur_train_labels, cur_train_lengths, cur_train_keys,
+                cur_train_speakers,
+                n_min_tokens_per_type=options_dict["n_min_tokens_per_type"],
+                n_max_types=options_dict["n_max_types"]
+                )
             train_x.extend(cur_train_x)
             train_labels.extend(cur_train_labels)
             train_lengths.extend(cur_train_lengths)
@@ -492,6 +501,8 @@ def main():
     options_dict["train_lang"] = args.train_lang
     options_dict["val_lang"] = args.val_lang
     options_dict["n_max_pairs"] = args.n_max_pairs
+    options_dict["n_min_tokens_per_type"] = args.n_min_tokens_per_type
+    options_dict["n_max_types"] = args.n_max_types
     options_dict["n_epochs"] = args.n_epochs
     options_dict["batch_size"] = args.batch_size
     options_dict["train_tag"] = args.train_tag
