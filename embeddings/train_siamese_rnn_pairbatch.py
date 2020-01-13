@@ -452,6 +452,16 @@ def check_argv():
         default=default_options_dict["n_max_pairs"]
         )
     parser.add_argument(
+        "--n_min_tokens_per_type", type=int,
+        help="minimum number of tokens per type (default: %(default)s)",
+        default=default_options_dict["n_min_tokens_per_type"]
+        )
+    parser.add_argument(
+        "--n_max_types", type=int,
+        help="maximum number of types per language (default: %(default)s)",
+        default=default_options_dict["n_max_types"]
+        )
+    parser.add_argument(
         "--n_epochs", type=int,
         help="number of epochs of training (default: %(default)s)",
         default=default_options_dict["n_epochs"]
