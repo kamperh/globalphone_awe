@@ -31,7 +31,7 @@ Train an AE-RNN on seven languages using ground truth segments and validate on
 German:
 
     ./train_cae_rnn.py --ae_n_epochs 25 --cae_n_epochs 0 \
-        --n_max_types 1000 --train_tag gt --val_lang GE RU+CZ+FR+PL+TH+BG+PO
+        --n_max_types 1000 --train_tag gt --val_lang GE RU+CZ+FR+PL+TH+PO
 
 
 Correspondence autoencoder RNN
@@ -71,7 +71,7 @@ minimum number of tokens per type:
     ./train_cae_rnn.py --pretrain_usefinal --ae_n_val_interval 14 \
         --ae_n_epochs 15 --cae_n_epochs 10 --n_max_pairs 300000 \
         --n_min_tokens_per_type 2 --n_max_types 1000 --train_tag gt \
-        --val_lang GE RU+CZ+FR+PL+TH+BG+PO
+        --val_lang GE RU+CZ+FR+PL+TH+PO
 
 
 Siamese RNN

@@ -3,8 +3,14 @@ Multilingual Acoustic Word Embeddings on GlobalPhone
 
 Overview
 --------
-Multilingual acoustic word embedding (AWE) approaches are implemented and
-evaluated on the GlobalPhhone corpus.
+Multilingual acoustic word embedding approaches are implemented and evaluated
+on the GlobalPhhone corpus. The experiments are described in:
+
+- H. Kamper, Y. Matusevych, and S.J. Goldwater "Multilingual acoustic word
+  embedding models for processing zero-resource languages," in *Proc. ICASSP*,
+  2019. [[arXiv](add_link)]
+
+Please cite this paper if you use the code.
 
 
 Disclaimer
@@ -23,22 +29,9 @@ the forced alignments. Save the data and forced alignments in a separate
 directory and update the `paths.py` file to point to the data directories.
 
 
-Create and run Docker image
----------------------------
-*To-do*
-
-*Temporary:*
-
-    docker run --runtime=nvidia -it --rm -u $(id -u):$(id -g) -p 8887:8887 \
-        #-v /r2d2/backup/endgame/datasets/buckeye:/data/buckeye \
-        #-v /r2d2/backup/endgame/datasets/zrsc2015/xitsonga_wavs:/data/xitsonga_wavs \
-        -v "$(pwd)":/home \
-        py3_tf1.13
-
-
-If not using Docker: Install dependencies
------------------------------------------
-If you are not using Docker, install the following dependencies:
+Install dependencies
+--------------------
+You will require the following:
 
 - [Python 3](https://www.python.org/downloads/)
 - [TensorFlow 1.13.1](https://www.tensorflow.org/)
@@ -103,6 +96,13 @@ In the root project directory, run `make test` to run unit tests.
 References
 ----------
 - https://github.com/eginhard/cae-utd-utils
+
+
+Contributors
+------------
+- [Herman Kamper](http://www.kamperh.com/)
+- [Yevgen Matusevych](https://homepages.inf.ed.ac.uk/ymatusev/)
+- [Sharon Goldwater](https://homepages.inf.ed.ac.uk/sgwater/)
 
 
 License
