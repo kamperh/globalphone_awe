@@ -4,11 +4,11 @@ Multilingual Acoustic Word Embeddings on GlobalPhone
 Overview
 --------
 Multilingual acoustic word embedding approaches are implemented and evaluated
-on the GlobalPhhone corpus. The experiments are described in:
+on the GlobalPhone corpus. The experiments are described in:
 
 - H. Kamper, Y. Matusevych, and S.J. Goldwater "Multilingual acoustic word
   embedding models for processing zero-resource languages," in *Proc. ICASSP*,
-  2019. [[arXiv](add_link)]
+  2020. [[arXiv](add_link)]
 
 Please cite this paper if you use the code.
 
