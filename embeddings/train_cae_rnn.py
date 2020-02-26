@@ -490,7 +490,7 @@ def train_cae(options_dict):
                 cae_record_dict = training.train_fixed_epochs(
                     options_dict["cae_n_epochs"], optimizer, loss,
                     train_batch_iterator, [a, a_lengths, b, b_lengths],
-                    samediff_val, save_model_fn=intermediate_model_fn,
+                    save_model_fn=intermediate_model_fn, 
                     load_model_fn=cae_pretrain_model_fn
                     )
             else:
