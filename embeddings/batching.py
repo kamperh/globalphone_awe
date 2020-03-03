@@ -29,7 +29,8 @@ class SimpleIterator(object):
         self.shuffle_every_epoch = shuffle_every_epoch
         self.n_input = self.x_list[0].shape[-1]
         self.x_lengths = np.array([i.shape[0] for i in x_list])
-        self.n_batches = int(len(self.x_lengths)/batch_size)
+        # self.n_batches = int(len(self.x_lengths)/batch_size)
+        self.n_batches = int(np.ceil(float(len(self.x_lengths))/batch_size))
         self.indices = np.arange(len(self.x_lengths))
         np.random.shuffle(self.indices)
     
