@@ -659,12 +659,14 @@ def check_argv():
         default=default_options_dict["keep_prob"]
         )
     parser.add_argument(
-        "--train_tag", type=str, choices=["gt", "utd", "rnd"],
+        "--train_tag", type=str, choices=["gt", "utd", "utd.fixed_labels",
+        "utd.fixed_labels_segs", "utd.fixed_segs", "rnd"],
         help="training set tag (default: %(default)s)",
         default=default_options_dict["train_tag"]
         )
     parser.add_argument(
-        "--pretrain_tag", type=str, choices=["gt", "utd", "rnd"],
+        "--pretrain_tag", type=str, choices=["gt", "utd", "utd.fixed_labels",
+        "utd.fixed_labels_segs", "utd.fixed_segs", "rnd"],
         help="pretraining set tag (default: %(default)s)",
         default=default_options_dict["pretrain_tag"]
         )
