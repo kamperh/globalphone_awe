@@ -660,13 +660,13 @@ def check_argv():
         )
     parser.add_argument(
         "--train_tag", type=str, choices=["gt", "utd", "utd.fixed_labels",
-        "utd.fixed_labels_segs", "rnd"],
+        "utd.fixed_labels_segs", "utd.fixed_segs", "rnd"],
         help="training set tag (default: %(default)s)",
         default=default_options_dict["train_tag"]
         )
     parser.add_argument(
         "--pretrain_tag", type=str, choices=["gt", "utd", "utd.fixed_labels",
-        "utd.fixed_labels_segs", "rnd"],
+        "utd.fixed_labels_segs", "utd.fixed_segs", "rnd"],
         help="pretraining set tag (default: %(default)s)",
         default=default_options_dict["pretrain_tag"]
         )

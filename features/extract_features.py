@@ -288,17 +288,21 @@ def main():
     fixed_labels_list_fn = path.join(
         "lists", args.language, "train.utd_terms.fixed_labels.list"
         )
+    fixed_segs_list_fn = path.join(
+        "lists", args.language, "train.utd_terms.fixed_segs.list"
+        )
     fixed_labels_segs_list_fn = path.join(
         "lists", args.language, "train.utd_terms.fixed_labels_segs.list"
         )
     if (not path.isfile(fixed_labels_list_fn) or 
-            not path.isfile(fixed_labels_segs_list_fn)):
+            not path.isfile(fixed_labels_segs_list_fn) or
+            not path.isfile(fixed_segs_list_fn)):
 
         # Read UTD terms
         utd_list_fn = path.join("lists", args.language, "train.utd_terms.list")
         print("Reading:", utd_list_fn)
         # overlap_dict[speaker_utt][(start, end)] is a tuple of
-        # (label, (start, end), overlap)
+        # (label, (start, end), overlap, cluster_label)
         overlap_dict = {}
         with codecs.open(utd_list_fn, "r", "utf-8") as utd_list_f:
             for line in utd_list_f:
@@ -309,7 +313,7 @@ def main():
                 if not speaker + "_" + utt in overlap_dict:
                     overlap_dict[speaker + "_" + utt] = {}
                 overlap_dict[speaker + "_" + utt][(start, end)] = (
-                    "label", (0, 0), 0
+                    "label", (0, 0), 0, term
                     )
 
         # Read forced alignments
@@ -347,7 +351,8 @@ def main():
                             utd_end)][2]):
                         overlap_dict[utt_key][(utd_start, utd_end)] = (
                             fa_dict[utt_key][(fa_start, fa_end)],
-                            (fa_start, fa_end), overlap
+                            (fa_start, fa_end), overlap,
+                            overlap_dict[utt_key][(utd_start, utd_end)][3]
                             )
 
         # Write list with fixed labels
@@ -382,8 +387,27 @@ def main():
         else:
             print("Using existing file:", fixed_labels_segs_list_fn)
 
+        # Write list with fixed segment intervals
+        if not path.isfile(fixed_segs_list_fn):
+            print("Writing:", fixed_segs_list_fn)
+            with (codecs.open(fixed_segs_list_fn, "w", "utf-8")
+                    ) as list_f:
+                for utt_key in sorted(overlap_dict):
+                    for (utd_start, utd_end) in overlap_dict[utt_key]:
+                        label = overlap_dict[utt_key][(utd_start, utd_end)][3]
+                        fa_start, fa_end = (
+                            overlap_dict[utt_key][(utd_start, utd_end)][1]
+                            )
+                        list_f.write(
+                            "{}_{}_{:06d}-{:06d}\n".format(label, utt_key,
+                            fa_start, fa_end)
+                            )
+        else:
+            print("Using existing file:", fixed_segs_list_fn)
+
     else:
         print("Using existing file:", fixed_labels_list_fn)
+        print("Using existing file:", fixed_segs_list_fn)
         print("Using existing file:", fixed_labels_segs_list_fn)
 
     # Extract UTD with fixed labels
@@ -397,6 +421,25 @@ def main():
         print("Extracting MFCCs for UTD tokens with fixed labels")
         utils.segments_from_npz(
             input_npz_fn, fixed_labels_list_fn, output_npz_fn
+            )
+    else:
+        print("Using existing file:", output_npz_fn)
+
+    # Extract UTD with fixed segment intervals
+    input_npz_fn = path.join(
+        feat_dir, args.language.lower() + ".train.npz"
+        )
+    output_npz_fn = path.join(
+        feat_dir, args.language.lower() +
+        ".train.utd_terms.fixed_segs.npz"
+        )
+    if not path.isfile(output_npz_fn):
+        print(
+            "Extracting MFCCs for UTD tokens with fixed labels and segment "
+            "intervals"
+            )
+        utils.segments_from_npz(
+            input_npz_fn, fixed_segs_list_fn, output_npz_fn
             )
     else:
         print("Using existing file:", output_npz_fn)
