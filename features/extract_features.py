@@ -150,6 +150,19 @@ def extract_features_for_subset(language, subset, feat_type, output_fn):
     np.savez_compressed(output_fn, **feat_dict)
 
 
+def get_overlap(ref_start, ref_end, test_start, test_end):
+    """Calculate the number of frames of `test` that overlaps with `ref`."""
+
+    # Check whether there is any overlap
+    if test_end <= ref_start or test_start >= ref_end:
+        return 0
+
+    n_overlap = ref_end - ref_start
+    n_overlap -= max(0, test_start - ref_start)
+    n_overlap -= max(0, ref_end - test_end)
+
+    return n_overlap
+
 
 #-----------------------------------------------------------------------------#
 #                                MAIN FUNCTION                                #
@@ -265,6 +278,99 @@ def main():
     if not path.isfile(output_npz_fn):
         print("Extracting MFCCs for UTD word tokens")
         utils.segments_from_npz(input_npz_fn, list_fn, output_npz_fn)
+    else:
+        print("Using existing file:", output_npz_fn)
+
+
+    # UTD SEGMENTS THAT HAVE BEEN PARTIALLY FIXED
+
+    # Write list with fixed labels
+    fixed_labels_list_fn = path.join(
+        "lists", args.language, "train.utd_terms.fixed_labels.list"
+        )
+    if not path.isfile(fixed_labels_list_fn):
+
+        # Read UTD terms
+        utd_list_fn = path.join("lists", args.language, "train.utd_terms.list")
+        print("Reading:", utd_list_fn)
+        # overlap_dict[speaker_utt][(start, end)] is a tuple of
+        # (label, (start, end), overlap)
+        overlap_dict = {}
+        with codecs.open(utd_list_fn, "r", "utf-8") as utd_list_f:
+            for line in utd_list_f:
+                term, speaker, utt, start_end = line.strip().split("_")
+                start, end = start_end.split("-")
+                start = int(start)
+                end = int(end)
+                if not speaker + "_" + utt in overlap_dict:
+                    overlap_dict[speaker + "_" + utt] = {}
+                overlap_dict[speaker + "_" + utt][(start, end)] = (
+                    "label", (0, 0), 0
+                    )
+
+        # Read forced alignments
+        fa_fn = path.join(gp_alignments_dir, args.language, subset + ".ctm")
+        print("Reading:", fa_fn)
+        fa_dict = {}
+        with codecs.open(fa_fn, "r", "utf-8") as fa_f:
+            for line in fa_f:
+                utt_key, _, start, duration, label = line.strip().split()
+                start = float(start)
+                duration = float(duration)
+                end = start + duration
+                start_frame = int(round(start*100))
+                end_frame = int(round(end*100))
+                if (label != "<unk>" and label != "sil" and label != "?" and
+                        label != "spn"):
+                    if not utt_key in fa_dict:
+                        fa_dict[utt_key] = {}
+                    fa_dict[utt_key][start_frame, end_frame] = label
+
+        # Find ground truth terms with maximal overlap
+        print("Getting ground truth terms with maximal overlap:")
+        for utt_key in tqdm(fa_dict):
+            # print(utt_key)
+            if utt_key not in overlap_dict:
+                continue
+            for (fa_start, fa_end) in fa_dict[utt_key]:
+                for (utd_start, utd_end) in overlap_dict[utt_key]:
+                    overlap = get_overlap(
+                        utd_start, utd_end, fa_start, fa_end
+                        )
+                    if overlap == 0:
+                        continue
+                    if (overlap > overlap_dict[utt_key][(utd_start,
+                            utd_end)][2]):
+                        overlap_dict[utt_key][(utd_start, utd_end)] = (
+                            fa_dict[utt_key][(fa_start, fa_end)],
+                            (fa_start, fa_end), overlap
+                            )
+
+        # Write list
+        print("Writing:", fixed_labels_list_fn)
+        with codecs.open(fixed_labels_list_fn, "w", "utf-8") as list_f:
+            for utt_key in overlap_dict:
+                for (utd_start, utd_end) in overlap_dict[utt_key]:
+                    label = overlap_dict[utt_key][(utd_start, utd_end)][0]
+                    list_f.write(
+                        "{}_{}_{:06d}-{:06d}\n".format(label, utt_key,
+                        utd_start, utd_end)
+                        )
+    else:
+        print("Using existing file:", fixed_labels_list_fn)
+
+    # Extract partially fixed UTD segments
+    input_npz_fn = path.join(
+        feat_dir, args.language.lower() + ".train.npz"
+        )
+    output_npz_fn = path.join(
+        feat_dir, args.language.lower() + ".train.utd_terms.fixed_labels.npz"
+        )
+    if not path.isfile(output_npz_fn):
+        print("Extracting MFCCs for partially fixed UTD word tokens")
+        utils.segments_from_npz(
+            input_npz_fn, fixed_labels_list_fn, output_npz_fn
+            )
     else:
         print("Using existing file:", output_npz_fn)
 
