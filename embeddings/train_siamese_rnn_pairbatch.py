@@ -472,7 +472,7 @@ def check_argv():
         default=default_options_dict["batch_size"]
         )
     parser.add_argument(
-        "--train_tag", type=str, choices=["gt", "utd"],
+        "--train_tag", type=str, choices=["gt", "utd", "utd.fixed_labels"],
         help="training set tag (default: %(default)s)",
         default=default_options_dict["train_tag"]
         )

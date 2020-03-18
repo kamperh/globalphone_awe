@@ -98,6 +98,16 @@ def main():
             link_fn = path.join(link_dir, "train.utd.npz")
             link_features(npz_fn, link_fn, link_dir)
 
+        # Training: partially fixed UTD words
+        npz_fn = path.join(
+            relative_features_dir, "mfcc", language, language.lower() +
+            ".train.utd_terms.fixed_labels.npz"
+            )
+        if path.isfile(path.join(link_dir, npz_fn)):
+            # Not all languages have UTD output
+            link_fn = path.join(link_dir, "train.utd.fixed_labels.npz")
+            link_features(npz_fn, link_fn, link_dir)
+
         # Validation: Ground truth words
         npz_fn = path.join(
             relative_features_dir, "mfcc", language, language.lower() +
