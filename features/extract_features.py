@@ -362,10 +362,14 @@ def main():
                 for utt_key in sorted(overlap_dict):
                     for (utd_start, utd_end) in overlap_dict[utt_key]:
                         label = overlap_dict[utt_key][(utd_start, utd_end)][0]
-                        list_f.write(
-                            "{}_{}_{:06d}-{:06d}\n".format(label, utt_key,
-                            utd_start, utd_end)
+                        overlap = (
+                            overlap_dict[utt_key][(utd_start, utd_end)][2]
                             )
+                        if overlap != 0:
+                            list_f.write(
+                                "{}_{}_{:06d}-{:06d}\n".format(label, utt_key,
+                                utd_start, utd_end)
+                                )
         else:
             print("Using existing file:", fixed_labels_list_fn)
 
@@ -380,10 +384,14 @@ def main():
                         fa_start, fa_end = (
                             overlap_dict[utt_key][(utd_start, utd_end)][1]
                             )
-                        list_f.write(
-                            "{}_{}_{:06d}-{:06d}\n".format(label, utt_key,
-                            fa_start, fa_end)
+                        overlap = (
+                            overlap_dict[utt_key][(utd_start, utd_end)][2]
                             )
+                        if overlap != 0:
+                            list_f.write(
+                                "{}_{}_{:06d}-{:06d}\n".format(label, utt_key,
+                                fa_start, fa_end)
+                                )
         else:
             print("Using existing file:", fixed_labels_segs_list_fn)
 
@@ -398,10 +406,14 @@ def main():
                         fa_start, fa_end = (
                             overlap_dict[utt_key][(utd_start, utd_end)][1]
                             )
-                        list_f.write(
-                            "{}_{}_{:06d}-{:06d}\n".format(label, utt_key,
-                            fa_start, fa_end)
+                        overlap = (
+                            overlap_dict[utt_key][(utd_start, utd_end)][2]
                             )
+                        if overlap != 0:
+                            list_f.write(
+                                "{}_{}_{:06d}-{:06d}\n".format(label, utt_key,
+                                fa_start, fa_end)
+                                )
         else:
             print("Using existing file:", fixed_segs_list_fn)
 
