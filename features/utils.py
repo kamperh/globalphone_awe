@@ -88,7 +88,10 @@ def segments_from_npz(input_npz_fn, segments_fn, output_npz_fn):
     for target_seg_key in tqdm(sorted(target_segs)):
         utterance, target_start, target_end = target_segs[target_seg_key]
         for utterance_key in [
-                i for i in utterance_segs.keys() if i.startswith(utterance)]:
+                i for i in utterance_segs.keys() if (i +
+                "_").startswith(utterance + "_")]:
+                # If like below: "GE008_128" also matches "GE008_12"
+                # i for i in utterance_segs.keys() if i.startswith(utterance)]:
             utterance_start, utterance_end = utterance_segs[utterance_key]
             if (target_start >= utterance_start and target_start <
                     utterance_end):
@@ -98,6 +101,7 @@ def segments_from_npz(input_npz_fn, segments_fn, output_npz_fn):
                     utterance_key
                     ][start:end]
                 n_target_segs += 1
+
                 break
 
     print(
