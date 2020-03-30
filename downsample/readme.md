@@ -32,6 +32,11 @@ Results
 -------
 SWDP average precision:
 
+- SP dev: 0.14567458
+
+
+*(Deprecated)* SWDP average precision:
+
 - CH dev: 0.11420457
 - CR dev: 0.11620668
 - HA dev: 0.11831970
@@ -45,4 +50,3 @@ SWDP average precision:
 - VN dev: 0.02734849
 
 - SP eval: 0.19438775
-

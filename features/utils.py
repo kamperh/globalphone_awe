@@ -101,7 +101,6 @@ def segments_from_npz(input_npz_fn, segments_fn, output_npz_fn):
                     utterance_key
                     ][start:end]
                 n_target_segs += 1
-
                 break
 
     print(

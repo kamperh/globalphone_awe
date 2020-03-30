@@ -110,5 +110,5 @@ Train a word classifier RNN on ground truth segments:
 Train a word classifier RNN jointly on multiple languages:
 
     ./train_rnn.py --n_epochs 15 --train_tag gt --n_max_types 10000 \
-        --n_max_tokens_per_type 20 --val_lang GE RU+CZ+FR+PL+TH+BG+PO
+        --n_max_tokens_per_type 20 --val_lang GE RU+CZ+FR+PL+TH+PO
 

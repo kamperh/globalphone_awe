@@ -74,6 +74,12 @@ def extract_mfcc_dir(dir):
         key = path.splitext(path.split(wav_fn)[-1])[0]
         feat_dict[key] = np.hstack([mfcc.T, mfcc_delta.T, mfcc_delta_delta.T])
 
+        # # Temp
+        # if "SP005_49" in wav_fn:
+        #     print(key)
+        #     print(feat_dict[key].shape)
+        #     assert False
+
         # from python_speech_features import delta
         # from python_speech_features import mfcc
         # sample_rate, signal = wav.read(wav_fn)

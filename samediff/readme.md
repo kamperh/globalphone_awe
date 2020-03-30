@@ -20,7 +20,7 @@ As an example, to evaluate the Spanish development MFCCs:
 
 Results
 -------
-SWDP average precision:
+*(Deprecated)* SWDP average precision:
 
 - CH dev: 0.15380600
 - CR dev: 0.13270483
