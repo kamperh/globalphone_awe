@@ -6,11 +6,15 @@ Overview
 Multilingual acoustic word embedding approaches are implemented and evaluated
 on the GlobalPhone corpus. The experiments are described in:
 
-- H. Kamper, Y. Matusevych, and S.J. Goldwater "Multilingual acoustic word
+- H. Kamper, Y. Matusevych, and S.J. Goldwater, "Multilingual acoustic word
   embedding models for processing zero-resource languages," in *Proc. ICASSP*,
-  2020. [[arXiv](add_link)]
+  2020. [[arXiv](https://arxiv.org/abs/2002.02109)]
+- H. Kamper, Y. Matusevych, and S. J. Goldwater, "Improved acoustic word
+  embeddings for zero-resource languages using multilingual transfer,"
+  *arXiv preprint arXiv:2006.02295*, 2020.
+  [[arXiv](https://arxiv.org/abs/2006.02295)]
 
-Please cite this paper if you use the code.
+Please cite these papers if you use the code.
 
 
 Disclaimer
