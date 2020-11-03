@@ -44,18 +44,26 @@ You will require the following:
 To install `speech_dtw` (required for same-different evaluation) and `shorten`
 (required for processing audio), run `./install_local.sh`.
 
+You can install all the other dependencies in a conda environment by running:
+
+    conda env create -f environment.yml
+    conda activate tf1.13
+
 
 Extract speech features
 -----------------------
-Update the paths in `paths.py` to point to the data directories. If you are
-using docker, `paths.py` will already point to the mounted directories. Extract
-MFCC features in the `features/` directory as follows:
+Update the paths in `paths.py` to point to the data directories. Extract MFCC
+features in the `features/` directory as follows:
 
     cd features
     ./extract_features.py SP
 
 You need to run `extract_features.py` for all languages; run it without any
 arguments to see all 16 language codes.
+
+UTD pairs can also be analysed here, by running e.g.:
+
+    ./analyse_utd_pairs.py SP
 
 
 Evaluate frame-level features using the same-different task

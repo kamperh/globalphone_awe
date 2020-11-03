@@ -13,8 +13,8 @@ Perform downsampling on MFCCs without deltas:
 
     mkdir -p exp/SP
     ./downsample.py --technique resample --frame_dims 13 \
-        ../features/mfcc/SP/sp.dev.gt_words.npz \
-        exp/SP/mfcc.dev.gt_words.downsample_10.npz 10
+        ../features/mfcc/CH/ch.eval.gt_words.npz \
+        exp/CH/mfcc.eval.gt_words.downsample_10.npz 10
 
 
 Evaluation

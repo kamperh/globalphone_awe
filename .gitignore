@@ -5,6 +5,7 @@
 !*.pyx
 !*.md
 !*.sh
+!*.yml
 !*.ipynb
 !*.conf
 !Makefile
